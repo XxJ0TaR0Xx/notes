@@ -4,12 +4,21 @@ import 'package:notes/presentation/widget/todo_row_widget.dart';
 import 'package:notes/utils/app_colors.dart';
 
 class DissmisableRowWidget extends StatelessWidget {
-  const DissmisableRowWidget({super.key});
+  final Function functionUpdate;
+  final Function functionDismissed;
+
+  const DissmisableRowWidget({
+    super.key,
+    required this.functionUpdate,
+    required this.functionDismissed,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Dismissible(
       key: const Key('item'),
+
+      //todo перечеркнутый текст
       background: Container(
         color: AppColors.colorGreen,
         alignment: Alignment.centerLeft,
