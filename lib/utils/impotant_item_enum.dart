@@ -1,1 +1,1 @@
-enum ImportantItem { not, low, hight }
+enum Imp { not, low, hight }

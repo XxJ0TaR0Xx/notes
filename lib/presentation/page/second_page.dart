@@ -13,7 +13,7 @@ class SecondPage extends StatefulWidget {
 }
 
 class _SecondPageState extends State<SecondPage> {
-  ImportantItem? selectedMenu;
+  Imp? selectedMenu;
   String text = 'Нет';
   String dateStr = '';
   bool switchTurn = false;
@@ -136,29 +136,29 @@ class _SecondPageState extends State<SecondPage> {
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                     const SizedBox(height: 4.0),
-                    PopupMenuButton<ImportantItem>(
+                    PopupMenuButton<Imp>(
                       initialValue: selectedMenu,
-                      onSelected: (ImportantItem item) {
+                      onSelected: (Imp item) {
                         setState(
                           () {
                             selectedMenu = item;
                           },
                         );
                       },
-                      itemBuilder: (context) => <PopupMenuEntry<ImportantItem>>[
-                        PopupMenuItem<ImportantItem>(
+                      itemBuilder: (context) => <PopupMenuEntry<Imp>>[
+                        PopupMenuItem<Imp>(
                           onTap: () => text = 'Нет',
-                          value: ImportantItem.not,
+                          value: Imp.not,
                           child: const Text('Нет'),
                         ),
-                        PopupMenuItem<ImportantItem>(
+                        PopupMenuItem<Imp>(
                           onTap: () => text = 'Низкая',
-                          value: ImportantItem.low,
+                          value: Imp.low,
                           child: const Text('Низкая'),
                         ),
-                        PopupMenuItem<ImportantItem>(
+                        PopupMenuItem<Imp>(
                           onTap: () => text = 'Высокая',
-                          value: ImportantItem.hight,
+                          value: Imp.hight,
                           child: const Text(
                             'Высокая',
                             style: TextStyle(color: Colors.red),
