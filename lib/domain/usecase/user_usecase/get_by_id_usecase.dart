@@ -6,7 +6,7 @@ import 'package:notes/core/usecase/usecase.dart';
 import 'package:notes/domain/entities/user.dart';
 import 'package:notes/domain/repositories/user_repository.dart';
 
-@Injectable()
+@Singleton()
 class GetUserByIdUseCase extends UseCase<User, String> {
   final UserRepository userRepository;
   GetUserByIdUseCase({required this.userRepository});

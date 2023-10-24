@@ -5,7 +5,7 @@ import 'package:notes/core/usecase/usecase.dart';
 import 'package:notes/domain/entities/note.dart';
 import 'package:notes/domain/repositories/note_repository.dart';
 
-@Injectable()
+@Singleton()
 class ReadNoteUseCase extends UseCase<Note, String> {
   final NoteRepository noteRepository;
   ReadNoteUseCase({required this.noteRepository});

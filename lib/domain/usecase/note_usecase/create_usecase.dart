@@ -7,7 +7,7 @@ import 'package:notes/core/usecase/usecase.dart';
 import 'package:notes/domain/repositories/note_repository.dart';
 import 'package:notes/utils/impotant_item_enum.dart';
 
-@Injectable()
+@Singleton()
 class CreateNoteUseCase extends UseCase<Unit, CreateParamsNote> {
   final NoteRepository noteRepository;
   CreateNoteUseCase({required this.noteRepository});
