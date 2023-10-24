@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "894446062131",
+    "project_id": "doit-c0cb9",
+    "storage_bucket": "doit-c0cb9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:894446062131:android:5cef00b4e781a932a4f146",
+        "android_client_info": {
+          "package_name": "com.example.notes"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyARVtNbzN7CyHRd3womHKL2Nv3BWTsTv20"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

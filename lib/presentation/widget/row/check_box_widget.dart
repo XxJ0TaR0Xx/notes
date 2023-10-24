@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:notes/utils/app_colors.dart';
 
+// ignore: must_be_immutable
 class MyCheckbox extends StatefulWidget {
   bool isChecked;
   final bool isImpotant;
