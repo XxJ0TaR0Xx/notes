@@ -1,6 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first, curly_braces_in_flow_control_structures
-import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:notes/domain/entities/note.dart';
 import 'package:notes/utils/impotant_item_enum.dart';
 
@@ -29,42 +29,34 @@ class NoteModel extends Note {
     );
   }
 
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'noteId': noteId,
-      'check': check,
-      'data': data,
-      'date': date.millisecondsSinceEpoch,
-      'important': important,
-    };
-  }
-
-  factory NoteModel.fromMap(Map<String, dynamic> map) {
+  factory NoteModel.fromDocument(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
     final Imp result; // correct with database
-    if (map['attributes']['severity'] == 'hight')
+    if (data['important'] == 'hight')
       result = Imp.hight;
-    else if (map['attributes']['severity'] == 'low')
+    else if (data['low'] == 'low')
       result = Imp.low;
-    else if (map['attributes']['severity'] == 'not')
+    else if (data['not'] == 'not')
       result = Imp.not;
     else
       result = Imp.not;
 
     return NoteModel(
-      noteId: map['noteId'] as String,
-      check: map['check'] as bool,
-      data: map['data'] as String,
-      date: DateTime.fromMillisecondsSinceEpoch(map['date'] as int),
+      noteId: doc.id,
+      check: data['check'],
+      data: data['data'],
+      date: (data['date'] as Timestamp).toDate(),
       important: result,
     );
   }
 
-  String toJson() => json.encode(toMap());
-
-  factory NoteModel.fromJson(String source) => NoteModel.fromMap(json.decode(source) as Map<String, dynamic>);
-
-  @override
-  String toString() {
-    return 'NoteModel(noteId: $noteId, check: $check, data: $data, date: $date, important: $important)';
+  Map<String, dynamic> toFirebase() {
+    return <String, dynamic>{
+      'noteId': noteId,
+      'check': check,
+      'data': data,
+      'date': date,
+      'important': important,
+    };
   }
 }

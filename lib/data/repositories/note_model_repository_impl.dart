@@ -7,10 +7,7 @@ import 'package:notes/domain/usecase/note_usecase/updaet_usecase.dart';
 
 class NoteModelRepositoryImpl implements NoteRepository {
   @override
-  Future<Either<Failure, Unit>> createNote({required CreateParamsNote noteParams}) {
-    // TODO: implement createNote
-    throw UnimplementedError();
-  }
+  Future<Either<Failure, Unit>> createNote({required CreateParamsNote noteParams}) {}
 
   @override
   Future<Either<Failure, Unit>> deleteNote({required String noteId}) {

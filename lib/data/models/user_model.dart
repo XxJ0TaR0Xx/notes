@@ -1,6 +1,4 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'dart:convert';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:notes/domain/entities/user.dart';
 
 class UserModel extends User {
@@ -22,36 +20,21 @@ class UserModel extends User {
     );
   }
 
-  Map<String, dynamic> toMap() {
+  factory UserModel.fromDocument(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
+
+    return UserModel(
+      userId: doc.id,
+      name: data['name'],
+      avatarUrl: data['avatarUrl'],
+    );
+  }
+
+  Map<String, dynamic> toFirebase() {
     return <String, dynamic>{
       'userId': userId,
       'name': name,
       'avatarUrl': avatarUrl,
     };
   }
-
-  factory UserModel.fromMap(Map<String, dynamic> map) {
-    return UserModel(
-      userId: map['userId'] as String,
-      name: map['name'] as String,
-      avatarUrl: map['avatarUrl'] as String,
-    );
-  }
-
-  String toJson() => json.encode(toMap());
-
-  factory UserModel.fromJson(String source) => UserModel.fromMap(json.decode(source) as Map<String, dynamic>);
-
-  @override
-  String toString() => 'UserModel(userId: $userId, name: $name, avatarUrl: $avatarUrl)';
-
-  @override
-  bool operator ==(covariant UserModel other) {
-    if (identical(this, other)) return true;
-
-    return other.userId == userId && other.name == name && other.avatarUrl == avatarUrl;
-  }
-
-  @override
-  int get hashCode => userId.hashCode ^ name.hashCode ^ avatarUrl.hashCode;
 }
