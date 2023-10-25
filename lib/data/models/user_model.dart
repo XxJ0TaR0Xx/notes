@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:notes/domain/entities/user.dart';
+import 'package:notes/domain/usecase/user_usecase/create_usecase.dart';
 
 class UserModel extends User {
   const UserModel({
@@ -32,9 +33,16 @@ class UserModel extends User {
 
   Map<String, dynamic> toFirebase() {
     return <String, dynamic>{
-      'userId': userId,
       'name': name,
       'avatarUrl': avatarUrl,
     };
+  }
+
+  factory UserModel.fromCreateUserParams(CreateParamsUser createParamsUser) {
+    return UserModel(
+      userId: 'null',
+      name: createParamsUser.name,
+      avatarUrl: createParamsUser.avatarUrl,
+    );
   }
 }

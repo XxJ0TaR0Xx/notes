@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:notes/utils/app_colors.dart';
-import 'package:notes/utils/impotant_item_enum.dart';
+import 'package:notes/domain/enums/impotant_item_enum.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class SecondPage extends StatefulWidget {

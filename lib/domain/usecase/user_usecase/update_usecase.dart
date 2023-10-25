@@ -17,11 +17,13 @@ class UpdateUserUseCase extends UseCase<Unit, UpdateParamsUser> {
 }
 
 class UpdateParamsUser {
-  final String name;
-  final String avatarUrl;
+  final String userId;
+  final String? name;
+  final String? avatarUrl;
 
-  UpdateParamsUser(
+  UpdateParamsUser({
+    required this.userId,
     this.name,
     this.avatarUrl,
-  );
+  });
 }

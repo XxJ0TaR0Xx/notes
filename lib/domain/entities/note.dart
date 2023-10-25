@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:notes/utils/impotant_item_enum.dart';
+import 'package:notes/domain/enums/impotant_item_enum.dart';
 
 class Note extends Equatable {
   final String noteId;

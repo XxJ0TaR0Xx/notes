@@ -3,16 +3,15 @@ import 'package:injectable/injectable.dart';
 
 import 'package:notes/core/failure/failure.dart';
 import 'package:notes/core/usecase/usecase.dart';
-import 'package:notes/domain/entities/user.dart';
 import 'package:notes/domain/repositories/user_repository.dart';
 
 @Singleton()
-class CreateUserUseCase extends UseCase<User, CreateParamsUser> {
+class CreateUserUseCase extends UseCase<Unit, CreateParamsUser> {
   final UserRepository userRepository;
   CreateUserUseCase({required this.userRepository});
 
   @override
-  Future<Either<Failure, User>> call(CreateParamsUser params) {
+  Future<Either<Failure, Unit>> call(CreateParamsUser params) {
     return userRepository.createUser(createParams: params);
   }
 }

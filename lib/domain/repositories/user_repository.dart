@@ -6,6 +6,6 @@ import 'package:notes/domain/usecase/user_usecase/update_usecase.dart';
 
 abstract class UserRepository {
   Future<Either<Failure, User>> getUserById({required String userId});
-  Future<Either<Failure, User>> createUser({required CreateParamsUser createParams});
+  Future<Either<Failure, Unit>> createUser({required CreateParamsUser createParams});
   Future<Either<Failure, Unit>> updateuser({required UpdateParamsUser updateParams});
 }
