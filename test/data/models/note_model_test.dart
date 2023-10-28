@@ -34,6 +34,16 @@ void main() {
       expect(result, updatedNote);
     });
 
+    //! Возможный вариант тестирования factory fromDocument
+    // сделать модель
+    // сделать запрос к бд на создание => получение с использованием факторки
+    // сравнить с изначальной моделью
+
+    //! Возможный вариант тестирования incorrect tests
+    // сделать неправильную модель
+    // сделать запрос к бд на создание => получение с использованием факторки
+    // сравнить с изначальной моделью
+
     // test('factory fromDocument', () {
     //   // Act
     //   final data = {
@@ -43,13 +53,9 @@ void main() {
     //     'important': Imp.low.toString(),
     //   };
 
-    //   // Создаем объект DocumentSnapshot с имитацией данных
-    //   final documentSnapshot = DocumentSnapshot(
-    //     data: data,
-    //     documentID: '2',
-    //   );
+    //   final documentSnapshot = JsonDocumentSnapshot();
     //   // Arrange
-    //   final NoteModel result = NoteModel.fromDocument(documentSnapshot);
+    //   final NoteModel result = NoteModel.fromDocument(data);
 
     //   // Accert
     //   expect(result, originalNote);

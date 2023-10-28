@@ -31,7 +31,7 @@ class NoteModelRepositoryImpl implements NoteRepository {
       final CollectionReference userNotesCollection = firebaseFirestore.collection('users').doc(userId).collection('notes');
       final NoteModel noteModel = NoteModel.fromCreateNoteParams(noteParams);
 
-      return userNotesCollection.add(noteModel.toFirebase()).then<Either<Failure, Unit>>((_) {
+      return await userNotesCollection.add(noteModel.toFirebase()).then<Either<Failure, Unit>>((_) {
         return const Right(unit);
       }).onError((error, stackTrace) {
         return const Left(FirebaseInternalFailure());
@@ -50,7 +50,7 @@ class NoteModelRepositoryImpl implements NoteRepository {
       }
 
       final DocumentReference userNoteDocument = firebaseFirestore.collection('users').doc(userId).collection('notes').doc(noteId);
-      return userNoteDocument.delete().then<Either<Failure, Unit>>((_) {
+      return await userNoteDocument.delete().then<Either<Failure, Unit>>((_) {
         return const Right(unit);
       }).onError((error, stackTrace) {
         return const Left(FirebaseInternalFailure());
@@ -69,7 +69,7 @@ class NoteModelRepositoryImpl implements NoteRepository {
       }
 
       final DocumentReference userNoteDocument = firebaseFirestore.collection('users').doc(userId).collection('notes').doc(noteId);
-      return userNoteDocument.get().then<Either<Failure, Note>>((value) {
+      return await userNoteDocument.get().then<Either<Failure, Note>>((value) {
         return Right(NoteModel.fromDocument(value));
       }).onError((error, stackTrace) {
         return const Left(FirebaseInternalFailure());
@@ -94,7 +94,7 @@ class NoteModelRepositoryImpl implements NoteRepository {
       if (updateParamsNote.check != null) updateData['check'] = updateParamsNote.check;
 
       final DocumentReference userNoteDocument = firebaseFirestore.collection('users').doc(userId).collection('notes').doc(updateParamsNote.noteId);
-      return userNoteDocument.update(updateData).then<Either<Failure, Unit>>((value) {
+      return await userNoteDocument.update(updateData).then<Either<Failure, Unit>>((value) {
         return const Right(unit);
       }).onError((error, stackTrace) {
         return const Left(FirebaseInternalFailure());
