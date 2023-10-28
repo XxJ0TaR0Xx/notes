@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
+import 'package:injectable/injectable.dart';
 import 'package:notes/core/failure/failure.dart';
 import 'package:notes/data/models/user_model.dart';
 import 'package:notes/domain/entities/user.dart';
@@ -8,6 +9,7 @@ import 'package:notes/domain/repositories/user_repository.dart';
 import 'package:notes/domain/usecase/user_usecase/create_usecase.dart';
 import 'package:notes/domain/usecase/user_usecase/update_usecase.dart';
 
+@Singleton(as: UserRepository)
 class UserModelRepositoryImpl implements UserRepository {
   final FirebaseFirestore firebaseFirestore;
 

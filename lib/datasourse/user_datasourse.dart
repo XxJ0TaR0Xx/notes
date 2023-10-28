@@ -1,8 +1,7 @@
 import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-//TODO: shared pref => injector
-//@Singleton()
+@Singleton()
 class UserDatasourse {
   final String _keyUserId = 'userId';
 

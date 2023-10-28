@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
+import 'package:injectable/injectable.dart';
 import 'package:notes/core/failure/failure.dart';
 import 'package:notes/data/models/note_model.dart';
 import 'package:notes/datasourse/user_datasourse.dart';
@@ -9,7 +10,7 @@ import 'package:notes/domain/repositories/note_repository.dart';
 import 'package:notes/domain/usecase/note_usecase/create_usecase.dart';
 import 'package:notes/domain/usecase/note_usecase/update_usecase.dart';
 
-//TODO: зависимость с injectble
+@Singleton(as: NoteRepository)
 class NoteModelRepositoryImpl implements NoteRepository {
   final UserDatasourse userDatasourse;
   final FirebaseFirestore firebaseFirestore;

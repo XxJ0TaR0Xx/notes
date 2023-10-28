@@ -45,8 +45,6 @@ class NoteModel extends Note {
 
   Map<String, dynamic> toFirebase() {
     return <String, dynamic>{
-      //не должно быть потому что это название доркумента
-      //'noteId': noteId,
       'check': check,
       'data': data,
       'date': date,

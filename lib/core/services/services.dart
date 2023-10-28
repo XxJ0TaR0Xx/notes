@@ -1,3 +1,5 @@
+// ignore_for_file: duplicate_import
+
 import 'dart:async';
 
 import 'package:get_it/get_it.dart';
