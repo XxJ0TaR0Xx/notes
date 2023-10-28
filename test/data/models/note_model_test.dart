@@ -15,7 +15,6 @@ void main() {
   group('note_model_test', () {
     test('copyWith method', () {
       // Act
-
       final NoteModel updatedNote = NoteModel(
         noteId: '1',
         check: false,
