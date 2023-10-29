@@ -11,6 +11,9 @@ import 'package:notes/domain/usecase/user_usecase/create_usecase.dart';
 import 'package:notes/domain/usecase/user_usecase/get_by_id_usecase.dart';
 import 'package:notes/domain/usecase/user_usecase/update_usecase.dart';
 
+import 'arrange/mock_user_repository.dart';
+import 'arrange/mock_note_repository.dart';
+
 final GetIt testServices = GetIt.I;
 
 FutureOr<void> initMockTestServices() {
@@ -18,31 +21,31 @@ FutureOr<void> initMockTestServices() {
   testServices.registerLazySingleton<UserRepository>(() => arrangeMockUserRepository());
 }
 
-FutureOr<void> initUsecaseTestServises() {
+FutureOr<void> initUsecaseTestServices() {
   //! GROUP NOTE
   //! for Create
-  testServices.registerLazySingleton<CreateNoteUseCase>(() => CreateNoteUseCase());
+  testServices.registerLazySingleton<CreateNoteUseCase>(() => CreateNoteUseCase(noteRepository: arrangeMockNoteRepository()));
 
   //! for Update
-  testServices.registerLazySingleton<UpdateNoteUseCase>(() => UpdateNoteUseCase());
+  testServices.registerLazySingleton<UpdateNoteUseCase>(() => UpdateNoteUseCase(noteRepository: arrangeMockNoteRepository()));
 
   //! for Delete
-  testServices.registerLazySingleton<DeleteNoteUseCase>(() => DeleteNoteUseCase());
+  testServices.registerLazySingleton<DeleteNoteUseCase>(() => DeleteNoteUseCase(noteRepository: arrangeMockNoteRepository()));
 
   //! for ReadUsecase
-  testServices.registerLazySingleton<ReadNoteUseCase>(() => ReadNoteUseCase());
+  testServices.registerLazySingleton<ReadNoteUseCase>(() => ReadNoteUseCase(noteRepository: arrangeMockNoteRepository()));
 
   ///////////////////////
 
   //! GROUP USER
   //! for Create
-  testServices.registerLazySingleton<CreateUserUseCase>(() => CreateUserUseCase());
+  testServices.registerLazySingleton<CreateUserUseCase>(() => CreateUserUseCase(userRepository: arrangeMockUserRepository()));
 
   //! for GetById
-  testServices.registerLazySingleton<GetUserByIdUseCase>(() => GetUserByIdUseCase());
+  testServices.registerLazySingleton<GetUserByIdUseCase>(() => GetUserByIdUseCase(userRepository: arrangeMockUserRepository()));
 
   //! for Update
-  testServices.registerLazySingleton<UpdateUserUseCase>(() => UpdateUserUseCase());
+  testServices.registerLazySingleton<UpdateUserUseCase>(() => UpdateUserUseCase(userRepository: arrangeMockUserRepository()));
 
   ///////////////////////
 }
