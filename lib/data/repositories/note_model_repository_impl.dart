@@ -33,10 +33,10 @@ class NoteModelRepositoryImpl implements NoteRepository {
       return userNotesCollection.add(noteModel.toFirebase()).then<Either<Failure, Unit>>((_) {
         return const Right(unit);
       }).onError((error, stackTrace) {
-        return const Left(FirebaseInternalFailure());
+        return const Left(FirebaseNoteInternalFailure());
       });
     } catch (_) {
-      return const Left(ExternalFailure());
+      return const Left(ExternalNoteFailure());
     }
   }
 
@@ -52,10 +52,10 @@ class NoteModelRepositoryImpl implements NoteRepository {
       return userNoteDocument.delete().then<Either<Failure, Unit>>((_) {
         return const Right(unit);
       }).onError((error, stackTrace) {
-        return const Left(FirebaseInternalFailure());
+        return const Left(FirebaseNoteInternalFailure());
       });
     } catch (_) {
-      return const Left(ExternalFailure());
+      return const Left(ExternalNoteFailure());
     }
   }
 
@@ -71,10 +71,10 @@ class NoteModelRepositoryImpl implements NoteRepository {
       return userNoteDocument.get().then<Either<Failure, Note>>((value) {
         return Right(NoteModel.fromDocument(value));
       }).onError((error, stackTrace) {
-        return const Left(FirebaseInternalFailure());
+        return const Left(FirebaseNoteInternalFailure());
       });
     } catch (_) {
-      return const Left(ExternalFailure());
+      return const Left(ExternalNoteFailure());
     }
   }
 
@@ -96,10 +96,10 @@ class NoteModelRepositoryImpl implements NoteRepository {
       return userNoteDocument.update(updateData).then<Either<Failure, Unit>>((value) {
         return const Right(unit);
       }).onError((error, stackTrace) {
-        return const Left(FirebaseInternalFailure());
+        return const Left(FirebaseNoteInternalFailure());
       });
     } catch (_) {
-      return const Left(ExternalFailure());
+      return const Left(ExternalNoteFailure());
     }
   }
 }
