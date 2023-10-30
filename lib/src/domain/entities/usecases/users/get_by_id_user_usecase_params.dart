@@ -1,7 +1,15 @@
 part of '../usecases.dart';
 
 class GetByIdUseCaseParams extends Equatable {
+  final String userId;
+
   @override
-  // TODO: implement props
-  List<Object?> get props => throw UnimplementedError();
+  bool get stringify => true;
+
+  @override
+  List<Object?> get props => [userId];
+
+  const GetByIdUseCaseParams({
+    required this.userId,
+  });
 }
