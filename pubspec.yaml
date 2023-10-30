@@ -20,6 +20,7 @@ dependencies:
   intl_translation: ^0.18.2
   shared_preferences: ^2.2.2
   table_calendar: ^3.0.9
+  uuid: ^4.1.0
 
 dev_dependencies:
   injectable_generator: ^2.4.0

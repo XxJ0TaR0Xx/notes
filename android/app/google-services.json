@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:894446062131:android:5cef00b4e781a932a4f146",
+        "mobilesdk_app_id": "1:894446062131:android:b45cec815cb868e9a4f146",
         "android_client_info": {
-          "package_name": "com.example.notes"
+          "package_name": "com.dashinside.notes"
         }
       },
       "oauth_client": [],

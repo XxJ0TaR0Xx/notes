@@ -1,0 +1,6 @@
+package com.dashinside.notes
+
+import io.flutter.embedding.android.FlutterActivity
+
+class MainActivity: FlutterActivity() {
+}
