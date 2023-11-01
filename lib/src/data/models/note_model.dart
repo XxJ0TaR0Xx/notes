@@ -10,7 +10,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:notes/src/domain/entities/entities.dart';
 import 'package:notes/src/domain/utils/priority_type_parser.dart';
 
-class NoteModel {
+final class NoteModel {
   static Map<String, dynamic> toMap(Note note) {
     return {
       'data': note.data,
