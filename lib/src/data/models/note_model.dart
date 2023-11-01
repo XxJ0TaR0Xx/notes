@@ -11,7 +11,7 @@ import 'package:notes/src/domain/entities/entities.dart';
 import 'package:notes/src/domain/utils/priority_type_parser.dart';
 
 final class NoteModel {
-  static Map<String, dynamic> toMap(Note note) {
+  static Map<String, dynamic> toFirebase(Note note) {
     return {
       'data': note.data,
       'isComplete': note.isComplete,

@@ -29,7 +29,7 @@ class NoteModelRepositoryImpl implements NoteRepository {
         dateBeforComplete: params.dateBeforComplete,
       );
 
-      return await ref.add(NoteModel.toMap(note)).then<Either<Failure, Unit>>((_) {
+      return await ref.add(NoteModel.toFirebase(note)).then<Either<Failure, Unit>>((_) {
         return const Right(unit);
       }).onError((error, stackTrace) {
         return const Left(FirebaseInternalFailure());

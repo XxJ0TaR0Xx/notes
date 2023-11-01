@@ -15,6 +15,13 @@ final class UserModel {
       avatarUrl: data['avatarUrl'],
     );
   }
+
+  static Map<String, dynamic> toFirebase(User user) {
+    return <String, dynamic>{
+      'name': user.name,
+      'avatarUrl': user.avatarUrl,
+    };
+  }
 }
 
 
