@@ -1,12 +1,19 @@
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 import 'package:notes/core/failure/failure.dart';
+import 'package:notes/core/firebase/firebase_module.dart';
 import 'package:notes/src/domain/entities/entities.dart';
 import 'package:notes/src/domain/entities/params_usecases/usecases.dart';
 import 'package:notes/src/domain/repositories/user_repository.dart';
 
 @Singleton(as: UserRepository)
 class UserModelRepositoryImpl implements UserRepository {
+  final FirebaseModule firebaseModule;
+
+  const UserModelRepositoryImpl({
+    required this.firebaseModule,
+  });
+
   @override
   Future<Either<Failure, Unit>> createUser(CreateUserUseCaseParams params) {
     // TODO: implement createUser

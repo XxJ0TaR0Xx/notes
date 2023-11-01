@@ -5,6 +5,7 @@ import 'package:notes/core/firebase/firebase_module.dart';
 import 'package:notes/core/services/services.dart';
 import 'package:notes/src/data/repositories/note_model_repository_impl.dart';
 import 'package:notes/src/domain/entities/entities.dart';
+import 'package:notes/src/domain/entities/enums/priority_type.dart';
 import 'package:notes/src/domain/entities/params_usecases/usecases.dart';
 import 'package:notes/src/domain/repositories/note_repository.dart';
 import 'package:notes/src/domain/usecase/note_usecases.dart';
@@ -14,7 +15,6 @@ import '../core/firebase/firebase_test_module.dart';
 
 class NoteRepositoryTest {
   static const String debugUserId = 'DEBUG_USER';
-  static const String debugNoteId = 'DEBUG_NOTE';
 
   Future<Either<Failure, Unit>> createUseCaseTest(String data) async {
     final CreateNoteUseCase createNoteUseCase = services<CreateNoteUseCase>();
@@ -26,11 +26,11 @@ class NoteRepositoryTest {
     return createNoteUseCase.call(params);
   }
 
-  Future<Either<Failure, Unit>> deleteUseCaseTest() async {
+  Future<Either<Failure, Unit>> deleteUseCaseTest(String deleteId) async {
     final DeleteNoteUseCase deleteNoteUseCase = services<DeleteNoteUseCase>();
-    const DeleteNoteUseCaseParams params = DeleteNoteUseCaseParams(
+    final DeleteNoteUseCaseParams params = DeleteNoteUseCaseParams(
       userId: debugUserId,
-      noteId: debugNoteId,
+      noteId: deleteId,
     );
 
     return deleteNoteUseCase.call(params);
@@ -43,6 +43,27 @@ class NoteRepositoryTest {
     );
 
     return readAllUseCase.call(params);
+  }
+
+  Future<Either<Failure, Note>> readNoteUseCase(String noteID) async {
+    final ReadNoteUseCase readNoteUseCase = services<ReadNoteUseCase>();
+    final ReadNoteUseCaseParams params = ReadNoteUseCaseParams(
+      userId: debugUserId,
+      noteId: noteID,
+    );
+
+    return readNoteUseCase.call(params);
+  }
+
+  Future<Either<Failure, Unit>> updateNoteUseCase(String noteID, String text) async {
+    final UpdateNoteUseCase updateNoteUseCase = services<UpdateNoteUseCase>();
+    final UpdateNoteUseCaseParams params = UpdateNoteUseCaseParams(
+      userId: debugUserId,
+      noteId: noteID,
+      data: text,
+    );
+
+    return updateNoteUseCase.call(params);
   }
 }
 
@@ -61,21 +82,81 @@ void main() async {
       services.registerSingleton<NoteRepository>(NoteModelRepositoryImpl(
         firebaseModule: services<FirebaseModule>(),
       ));
+      // params for CreateNoteUseCase
+      final String debugUuid1 = const Uuid().v4();
+      final String debugUuid2 = const Uuid().v4();
 
-      /**
-       * CreateNoteUseCase Test
-       */
+      // CreateNoteUseCase Test
+      Future<Either<Failure, Unit>> createT1Reposnse() => noteRepositoryTest.createUseCaseTest(debugUuid1);
+      expect(
+        await createT1Reposnse(),
+        isA<Right>(),
+        reason: 'Unexpected CreateNoteUseCase Failure',
+      );
 
-      final String debugUuid = const Uuid().v4();
-      Future<Either<Failure, Unit>> createT1Reposnse() => noteRepositoryTest.createUseCaseTest(debugUuid);
-      expect(await createT1Reposnse(), isA<Right>(), reason: 'Unexpected CreateNoteUseCase Failure');
-      //***
+      Future<Either<Failure, Unit>> createT2Reposnse() => noteRepositoryTest.createUseCaseTest(debugUuid2);
+      expect(
+        await createT2Reposnse(),
+        isA<Right>(),
+        reason: 'Unexpected CreateNoteUseCase Failure',
+      );
 
-      /**
-       * ReadAllNoteUseCase Test
-       */
+      ////////////////////////
 
-      //***
+      // ReadAllNoteUseCase Test
+      Future<Either<Failure, List<Note>>> readAllResponse() => noteRepositoryTest.readAllUseCaseTest();
+      expect(
+        await readAllResponse(),
+        isA<Right>(),
+        reason: 'Unexpected ReadAllNoteUseCase Failure',
+      );
+
+      List<Note> list = (await readAllResponse()).fold((l) => [], (r) => r);
+
+      expect(
+        list.map((e) => e.data),
+        [debugUuid1, debugUuid1],
+        reason: 'Writen data isn\'t correct',
+      );
+
+      ///////////////////////
+
+      // DeleteNoteUseCase Test
+      Future<Either<Failure, Unit>> deleteResponse() => noteRepositoryTest.deleteUseCaseTest(list.first.id!);
+      expect(
+        await deleteResponse(),
+        isA<Right>(),
+        reason: 'Unexpected DeleteNoteUseCase Failure',
+      );
+
+      ///////////////////////
+
+      // ReadNoteUseCase Test
+      Future<Either<Failure, Note>> readResponse() => noteRepositoryTest.readNoteUseCase(list.first.id!);
+      expect(
+        await readResponse(),
+        isA<Left>(),
+        reason: 'This Note isn\'t delete',
+      );
+
+      ///////////////////////
+
+      //UpdateNoteUseCase Test
+      Future<Either<Failure, Unit>> updateResponse() => noteRepositoryTest.updateNoteUseCase(list.last.id!, 'Test is correct');
+      expect(
+        await updateResponse(),
+        isA<Right>(),
+        reason: 'Unexpected UpdateNoteUseCase Failure',
+      );
+
+      Future<Either<Failure, Note>> readCorrectResponse() => noteRepositoryTest.readNoteUseCase(list.last.id!);
+      expect(
+        await readCorrectResponse(),
+        const Right(Note(data: 'Test is correct', isComplete: false, priorityType: PriorityType.not)),
+        reason: 'Update isn\'t complete',
+      );
+
+      ///////////////////////
     });
   });
 }

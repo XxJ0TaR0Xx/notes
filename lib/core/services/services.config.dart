@@ -42,7 +42,8 @@ extension GetItInjectableX on _i1.GetIt {
     gh.singleton<_i6.UpdateNoteUseCase>(
         _i6.UpdateNoteUseCase(noteRepository: gh<_i4.NoteRepository>()));
     gh.singleton<_i7.UserDatasourse>(_i7.UserDatasourse());
-    gh.singleton<_i8.UserRepository>(_i9.UserModelRepositoryImpl());
+    gh.singleton<_i8.UserRepository>(
+        _i9.UserModelRepositoryImpl(firebaseModule: gh<_i3.FirebaseModule>()));
     gh.factory<_i6.CreateNoteUseCase>(
         () => _i6.CreateNoteUseCase(noteRepository: gh<_i4.NoteRepository>()));
     gh.singleton<_i10.CreateUserUseCase>(
