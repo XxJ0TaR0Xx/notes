@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:notes/core/failure/failure.dart';
 import 'package:notes/src/domain/entities/entities.dart';
-import 'package:notes/src/domain/entities/usecases/usecases.dart';
+import 'package:notes/src/domain/entities/params_usecases/usecases.dart';
 
 abstract class NoteRepository {
   Future<Either<Failure, Note>> readNote(ReadNoteUseCaseParams params);

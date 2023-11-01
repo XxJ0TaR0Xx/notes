@@ -6,7 +6,7 @@ import 'package:notes/core/firebase/firebase_module.dart';
 import 'package:notes/src/data/models/note_model.dart';
 import 'package:notes/src/domain/entities/entities.dart';
 import 'package:notes/src/domain/entities/enums/priority_type.dart';
-import 'package:notes/src/domain/entities/usecases/usecases.dart';
+import 'package:notes/src/domain/entities/params_usecases/usecases.dart';
 import 'package:notes/src/domain/failures/note_failures.dart';
 import 'package:notes/src/domain/repositories/note_repository.dart';
 

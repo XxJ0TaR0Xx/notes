@@ -5,7 +5,7 @@ import 'package:notes/core/firebase/firebase_module.dart';
 import 'package:notes/core/services/services.dart';
 import 'package:notes/src/data/repositories/note_model_repository_impl.dart';
 import 'package:notes/src/domain/entities/entities.dart';
-import 'package:notes/src/domain/entities/usecases/usecases.dart';
+import 'package:notes/src/domain/entities/params_usecases/usecases.dart';
 import 'package:notes/src/domain/repositories/note_repository.dart';
 import 'package:notes/src/domain/usecase/note_usecases.dart';
 import 'package:uuid/uuid.dart';
