@@ -34,8 +34,8 @@ Future<void> main() async {
   // firebase related
   await services<FirebaseModule>().init();
 
-  final String v4ID = const Uuid().v4();
-  firebaseTest(v4ID);
+  // final String v4ID = const Uuid().v4();
+  // firebaseTest(v4ID);
 
   runApp(const App());
 }

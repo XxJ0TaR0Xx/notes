@@ -33,7 +33,8 @@ extension GetItInjectableX on _i1.GetIt {
       environmentFilter,
     );
     gh.singleton<_i3.FirebaseModule>(_i3.FirebaseModule());
-    gh.singleton<_i4.NoteRepository>(_i5.NoteModelRepositoryImpl());
+    gh.singleton<_i4.NoteRepository>(
+        _i5.NoteModelRepositoryImpl(firebaseModule: gh<_i3.FirebaseModule>()));
     gh.factory<_i6.ReadAllNoteUseCase>(
         () => _i6.ReadAllNoteUseCase(noteRepository: gh<_i4.NoteRepository>()));
     gh.factory<_i6.ReadNoteUseCase>(

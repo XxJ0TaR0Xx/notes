@@ -1,16 +1,42 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 import 'package:notes/core/failure/failure.dart';
+import 'package:notes/core/firebase/firebase_module.dart';
+import 'package:notes/src/data/models/note_model.dart';
 import 'package:notes/src/domain/entities/entities.dart';
+import 'package:notes/src/domain/entities/enums/priority_type.dart';
 import 'package:notes/src/domain/entities/usecases/usecases.dart';
+import 'package:notes/src/domain/failures/note_failures.dart';
 import 'package:notes/src/domain/repositories/note_repository.dart';
 
 @Singleton(as: NoteRepository)
 class NoteModelRepositoryImpl implements NoteRepository {
+  final FirebaseModule firebaseModule;
+
+  const NoteModelRepositoryImpl({
+    required this.firebaseModule,
+  });
+
   @override
-  Future<Either<Failure, Unit>> createNote(CreateNoteUseCaseParams params) {
-    // TODO: implement createNote
-    throw UnimplementedError();
+  Future<Either<Failure, Unit>> createNote(CreateNoteUseCaseParams params) async {
+    try {
+      final CollectionReference ref = firebaseModule.firebaseFirestore.collection('users').doc(params.userId).collection('notes');
+      final Note note = Note(
+        data: params.data ?? '',
+        isComplete: params.isComplete ?? false,
+        priorityType: params.priorityType ?? PriorityType.not,
+        dateBeforComplete: params.dateBeforComplete,
+      );
+
+      return await ref.add(NoteModel.toMap(note)).then<Either<Failure, Unit>>((_) {
+        return const Right(unit);
+      }).onError((error, stackTrace) {
+        return const Left(FirebaseInternalFailure());
+      });
+    } catch (_) {
+      return const Left(ExternalFailure());
+    }
   }
 
   @override
@@ -32,7 +58,7 @@ class NoteModelRepositoryImpl implements NoteRepository {
   }
 
   @override
-  Future<Either<Failure, List<Note>>> readAllNote(ReadNoteUseCaseParams params) {
+  Future<Either<Failure, List<Note>>> readAllNote(ReadAllNoteUseCaseParams params) {
     // TODO: implement readAllNote
     throw UnimplementedError();
   }

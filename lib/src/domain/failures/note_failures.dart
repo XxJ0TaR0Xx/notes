@@ -1,13 +1,13 @@
 import 'package:notes/core/failure/failure.dart';
 
-class UserNotExistFailure extends Failure {
-  const UserNotExistFailure() : super(message: 'User Not Exist Failure');
+final class UserNotExistFailure extends Failure {
+  const UserNotExistFailure();
 }
 
-class FirebaseInternalFailure extends Failure {
-  const FirebaseInternalFailure() : super(message: 'Firebase Internal Failure');
+final class FirebaseInternalFailure extends Failure {
+  const FirebaseInternalFailure();
 }
 
-class ExternalFailure extends Failure {
-  const ExternalFailure() : super(message: 'Extinternal Failure');
+final class ExternalFailure extends Failure {
+  const ExternalFailure();
 }

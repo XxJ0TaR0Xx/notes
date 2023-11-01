@@ -8,5 +8,5 @@ abstract class NoteRepository {
   Future<Either<Failure, Unit>> createNote(CreateNoteUseCaseParams params);
   Future<Either<Failure, Unit>> updateNote(UpdateNoteUseCaseParams params);
   Future<Either<Failure, Unit>> deleteNote(DeleteNoteUseCaseParams params);
-  Future<Either<Failure, List<Note>>> readAllNote(ReadNoteUseCaseParams params);
+  Future<Either<Failure, List<Note>>> readAllNote(ReadAllNoteUseCaseParams params);
 }
