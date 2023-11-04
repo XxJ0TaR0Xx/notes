@@ -17,7 +17,7 @@ class UserModelRepositoryImpl implements UserRepository {
     required this.firebaseModule,
   });
 
-  @override
+  @override // ты не используешь id из CreateUserUseCaseParams params а генерируешь новый
   Future<Either<Failure, Unit>> createUser(CreateUserUseCaseParams params) async {
     try {
       final CollectionReference ref = firebaseModule.firebaseFirestore.collection('users');
@@ -51,7 +51,10 @@ class UserModelRepositoryImpl implements UserRepository {
     }
   }
 
-  @override
+  @override // используй оптимальный кринж снизу вместо
+  //     ref.get().then((userFireBase) {
+  //       user = UserModel.fromDocument(userFireBase);
+  //     });
   Future<Either<Failure, Unit>> updateuser(UpdateUserUseCaseParams params) async {
     try {
       final DocumentReference<Map<String, dynamic>> ref = firebaseModule.firebaseFirestore.collection('users').doc(params.userId);

@@ -6,6 +6,8 @@
 // import 'package:notes/domain/usecase/note_usecase/create_usecase.dart';
 // import 'package:notes/domain/utils/imp_parse.dart';
 
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:notes/src/domain/entities/entities.dart';
 import 'package:notes/src/domain/utils/priority_type_parser.dart';
@@ -23,13 +25,15 @@ final class NoteModel {
   static Note fromDoc(DocumentSnapshot doc) {
     final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
 
-    return Note(
+    final Note note = Note(
       id: doc.id,
       data: data['data'],
       isComplete: data['isComplete'],
-      dateBeforComplete: DateTime.tryParse(data['dateBeforComplete']),
+      dateBeforComplete: DateTime.tryParse(data['dateBeforComplete'] ?? ''),
       priorityType: PriorityTypeParser.strToPriority(data['priority']),
     );
+    log(note.toString());
+    return note;
   }
 }
 

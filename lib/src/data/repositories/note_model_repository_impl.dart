@@ -71,7 +71,7 @@ class NoteModelRepositoryImpl implements NoteRepository {
     }
   }
 
-  @override
+  @override // переделывать без гета, используй оптимальный крин снизу
   Future<Either<Failure, Unit>> updateNote(UpdateNoteUseCaseParams params) async {
     try {
       final DocumentReference<Map<String, dynamic>> ref = firebaseModule.firebaseFirestore.collection('users').doc(params.userId).collection('notes').doc(params.noteId);
@@ -100,11 +100,9 @@ class NoteModelRepositoryImpl implements NoteRepository {
 
   @override
   Future<Either<Failure, List<Note>>> readAllNote(ReadAllNoteUseCaseParams params) async {
+    List<Note> listNote = [];
     try {
       final CollectionReference<Map<String, dynamic>> ref = firebaseModule.firebaseFirestore.collection('users').doc(params.userId).collection('notes');
-
-      List<Note> listNote = [];
-
       return await ref.get().then<Either<Failure, List<Note>>>((noteQuerySnapshot) {
         if (noteQuerySnapshot.docs.isEmpty) {
           log('is empty');
@@ -112,7 +110,7 @@ class NoteModelRepositoryImpl implements NoteRepository {
         } else {
           log('is NOT empty');
           noteQuerySnapshot.docs.forEach((doc) {
-            log('Doc is ${doc}');
+            log('Doc is ${doc.data()}');
             listNote.add(NoteModel.fromDoc(doc));
             log('Doc is $doc');
           });
