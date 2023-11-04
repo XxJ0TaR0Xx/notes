@@ -115,7 +115,7 @@ void main() async {
 
       expect(
         list.map((e) => e.data),
-        [debugUuid1, debugUuid1],
+        [debugUuid1, debugUuid2],
         reason: 'Writen data isn\'t correct',
       );
 
