@@ -20,7 +20,7 @@ class UserModelRepositoryImpl implements UserRepository {
   @override // ты не используешь id из CreateUserUseCaseParams params а генерируешь новый
   Future<Either<Failure, Unit>> createUser(CreateUserUseCaseParams params) async {
     try {
-      final CollectionReference ref = firebaseModule.firebaseFirestore.collection('users');
+      final CollectionReference<Map<String, dynamic>> ref = firebaseModule.firebaseFirestore.collection('users');
       User user = User(
         name: params.userName,
         avatarUrl: params.avatarUrl ?? '',
@@ -58,24 +58,17 @@ class UserModelRepositoryImpl implements UserRepository {
   Future<Either<Failure, Unit>> updateuser(UpdateUserUseCaseParams params) async {
     try {
       final DocumentReference<Map<String, dynamic>> ref = firebaseModule.firebaseFirestore.collection('users').doc(params.userId);
-      User? user;
 
-      ref.get().then((userFireBase) {
-        user = UserModel.fromDocument(userFireBase);
-      });
+      Map<String, dynamic> updateData = {};
+      if (params.avaterUrl != null) updateData['avatarUrl'] = params.avaterUrl;
+      if (params.userName != null) updateData['name'] = params.userName;
 
-      if (user != null) {
-        User updateUser = User(
-          name: params.userName ?? user!.name,
-          avatarUrl: params.avaterUrl ?? user!.avatarUrl,
-        );
-
-        await ref.set(UserModel.toFirebase(updateUser));
+      return await ref.update(updateData).then<Either<Failure, Unit>>((_) {
         return const Right(unit);
-      } else {
+      }).onError((error, stackTrace) {
         return const Left(FirebaseUserInternalFailure());
-      }
-    } catch (e) {
+      });
+    } catch (_) {
       return const Left(ExternalUserFailure());
     }
   }

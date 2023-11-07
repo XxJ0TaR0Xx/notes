@@ -75,24 +75,18 @@ class NoteModelRepositoryImpl implements NoteRepository {
   Future<Either<Failure, Unit>> updateNote(UpdateNoteUseCaseParams params) async {
     try {
       final DocumentReference<Map<String, dynamic>> ref = firebaseModule.firebaseFirestore.collection('users').doc(params.userId).collection('notes').doc(params.noteId);
-      Note? note;
 
-      ref.get().then((value) {
-        note = NoteModel.fromDoc(value);
-      });
+      Map<String, dynamic> updateData = {};
+      if (params.data != null) updateData['data'] = params.data;
+      if (params.dateBeforComplete != null) updateData['dateBeforComplete'] = params.dateBeforComplete;
+      if (params.priorityType != null) updateData['priority'] = params.priorityType;
+      if (params.isComplete != null) updateData['isComplete'] = params.isComplete;
 
-      if (note != null) {
-        Note updateNote = Note(
-          data: params.data ?? note!.data,
-          isComplete: note!.isComplete,
-          priorityType: note!.priorityType,
-        );
-
-        await ref.set(NoteModel.toFirebase(updateNote));
+      return await ref.update(updateData).then<Either<Failure, Unit>>((value) {
         return const Right(unit);
-      } else {
+      }).onError((error, stackTrace) {
         return const Left(FirebaseInternalFailure());
-      }
+      });
     } catch (_) {
       return const Left(ExternalFailure());
     }
@@ -196,7 +190,7 @@ class NoteModelRepositoryImpl implements NoteRepository {
 //   }
 
 //   @override
-//   Future<Either<Failure, Unit>> updateNote({required UpdateParamsNote updateParamsNote}) async {
+//   Future<Either<Failure, Unit>> updateNote({required params params}) async {
 //     try {
 //       final String? userId = await userDatasourse.getUserId();
 //       if (userId == null) {
@@ -204,12 +198,12 @@ class NoteModelRepositoryImpl implements NoteRepository {
 //       }
 //       // оптимальный кринж
 //       Map<String, dynamic> updateData = {};
-//       if (updateParamsNote.data != null) updateData['data'] = updateParamsNote.data;
-//       if (updateParamsNote.date != null) updateData['date'] = updateParamsNote.date;
-//       if (updateParamsNote.important != null) updateData['important'] = updateParamsNote.important;
-//       if (updateParamsNote.check != null) updateData['check'] = updateParamsNote.check;
+//       if (params.data != null) updateData['data'] = params.data;
+//       if (params.date != null) updateData['date'] = params.date;
+//       if (params.important != null) updateData['important'] = params.important;
+//       if (params.check != null) updateData['check'] = params.check;
 
-//       final DocumentReference userNoteDocument = firebaseFirestore.collection('users').doc(userId).collection('notes').doc(updateParamsNote.noteId);
+//       final DocumentReference userNoteDocument = firebaseFirestore.collection('users').doc(userId).collection('notes').doc(params.noteId);
 //       return await userNoteDocument.update(updateData).then<Either<Failure, Unit>>((value) {
 //         return const Right(unit);
 //       }).onError((error, stackTrace) {
