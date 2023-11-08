@@ -30,7 +30,7 @@ final class NoteModel {
       data: data['data'],
       isComplete: data['isComplete'],
       dateBeforComplete: DateTime.tryParse(data['dateBeforComplete'] ?? ''),
-      priorityType: PriorityTypeParser.strToPriority(data['priority']),
+      priorityType: PriorityTypeParser.strToPriority(data['priority'] ?? 'not'),
     );
     log(note.toString());
     return note;
