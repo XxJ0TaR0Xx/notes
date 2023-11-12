@@ -1,27 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:notes/src/domain/entities/enums/priority_type.dart';
 import 'package:notes/src/presentation/const/app_colors.dart';
 import 'package:notes/src/presentation/widget/row/todo_row_widget.dart';
 
 class DissmisableRowWidget extends StatelessWidget {
-  final Function functionUpdate;
+  final void Function() functionUpdate;
   final Function functionDismissed;
+  final bool isComplete;
+  final String keyItem;
   final String data;
   final String? date;
+  final PriorityType priorityType;
+
   const DissmisableRowWidget({
     super.key,
+    required this.priorityType,
+    required this.isComplete,
     required this.functionUpdate,
     required this.functionDismissed,
     required this.data,
+    required this.keyItem,
     this.date,
   });
 
   @override
   Widget build(BuildContext context) {
     return Dismissible(
-      key: const Key('item'),
-
-      //todo перечеркнутый текст
+      key: ValueKey<String>(keyItem),
+      // ignore: body_might_complete_normally_nullable
+      confirmDismiss: (DismissDirection direction) async {
+        if (direction == DismissDirection.endToStart) {
+          functionDismissed();
+        } else if (direction == DismissDirection.startToEnd) {
+          functionUpdate();
+        }
+      },
       background: Container(
         color: AppColors.colorGreen,
         alignment: Alignment.centerLeft,
@@ -43,8 +57,11 @@ class DissmisableRowWidget extends StatelessWidget {
         ),
       ),
       child: TodoRowWodget(
+        updateIsComplete: functionUpdate,
+        priorityType: priorityType,
+        isComplete: isComplete,
         data: data,
-        date: date,
+        dateBeforComplete: date,
       ),
     );
   }
