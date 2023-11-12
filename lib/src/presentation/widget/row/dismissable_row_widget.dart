@@ -61,8 +61,8 @@ class DissmisableRowWidget extends StatelessWidget {
         ),
       ),
 
-      /// Сама строка заметки
-      child: TodoRowWodget(
+      /// Cтрока заметки
+      child: TodoRowWidget(
         updateIsComplete: functionUpdate,
         priorityType: priorityType,
         isComplete: isComplete,
