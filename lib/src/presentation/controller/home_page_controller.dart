@@ -30,14 +30,16 @@ class HomePageController with ChangeNotifier {
     readNoteUseCase = ReadNoteUseCase(noteRepository: noteRepository);
   }
 
+  Note noteLoading = const Note(data: "Loading", isComplete: false, priorityType: PriorityType.not);
+
   List<Note>? _noteList;
-  List<Note> get noteList => _noteList ?? [const Note(data: "Loading", isComplete: false, priorityType: PriorityType.not)];
+  List<Note> get noteList => _noteList ?? [noteLoading];
 
   List<Note> notCompleteNoteList = [];
   List<Note> noteListBuffer = [];
 
   Note? _note;
-  Note get note => _note ?? const Note(data: "Loading", isComplete: false, priorityType: PriorityType.not);
+  Note get note => _note ?? noteLoading;
 
   String _pathIcon = 'assets/icons/visibility.svg';
   String get pathIcon => _pathIcon;
@@ -121,15 +123,18 @@ class HomePageController with ChangeNotifier {
   }
 
   void showDoneNote() {
-    if (_pathIcon == 'assets/icons/visibility.svg') {
-      _pathIcon = 'assets/icons/visibility_off.svg';
+    String visibilityPath = 'assets/icons/visibility.svg';
+    String visibilityOffPath = 'assets/icons/visibility_off.svg';
+
+    if (_pathIcon == visibilityPath) {
+      _pathIcon = visibilityOffPath;
     } else {
-      _pathIcon = 'assets/icons/visibility.svg';
+      _pathIcon = visibilityPath;
     }
 
-    log('noteListBuffer $noteListBuffer');
+    log("notCompleteNoteList $notCompleteNoteList");
 
-    if (notCompleteNoteList.isNotEmpty && (_noteList != notCompleteNoteList) && _noteList != null) {
+    if ((_noteList != notCompleteNoteList) && (_noteList != null)) {
       noteListBuffer = _noteList!;
       _noteList = notCompleteNoteList;
     } else {
