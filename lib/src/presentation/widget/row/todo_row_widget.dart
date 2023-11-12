@@ -44,6 +44,33 @@ class TodoRowWodget extends StatelessWidget {
     }
   }
 
+  List<Widget> checkPriority({required Text text}) {
+    switch (priorityType) {
+      case PriorityType.low:
+        return [
+          SvgPicture.asset(
+            'assets/icons/low_priority.svg',
+            height: 16.0,
+            width: 16.0,
+          ),
+          const SizedBox(width: 3.0),
+          text,
+        ];
+      case PriorityType.hight:
+        return [
+          SvgPicture.asset(
+            'assets/icons/hight_priority.svg',
+            height: 16.0,
+            width: 16.0,
+          ),
+          const SizedBox(width: 3.0),
+          text,
+        ];
+      default:
+        return [text];
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -63,12 +90,15 @@ class TodoRowWodget extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  data,
-                  //?.copyWith(color: Colors.red)
-                  style: checkText(),
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
+                Row(
+                  children: checkPriority(
+                    text: Text(
+                      data,
+                      style: checkText(),
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
                 ),
                 Text(
                   dateBeforCompleteCheck(),
