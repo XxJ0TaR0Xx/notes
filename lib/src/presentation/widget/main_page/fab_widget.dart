@@ -3,12 +3,16 @@ import 'package:flutter_svg/svg.dart';
 import 'package:notes/src/presentation/const/app_colors.dart';
 
 class FabWidget extends StatelessWidget {
-  const FabWidget({super.key});
+  final void Function() onPressed;
+  const FabWidget({
+    super.key,
+    required this.onPressed,
+  });
 
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
-      onPressed: () {},
+      onPressed: onPressed,
       child: ColorFiltered(
         colorFilter: ColorFilter.mode(
           AppColors.colorWhite,
