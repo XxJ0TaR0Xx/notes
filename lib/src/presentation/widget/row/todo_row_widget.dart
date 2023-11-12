@@ -4,13 +4,13 @@ import 'package:notes/src/domain/entities/enums/priority_type.dart';
 import 'package:notes/src/presentation/const/app_colors.dart';
 import 'package:notes/src/presentation/widget/row/check_box_widget.dart';
 
-class TodoRowWodget extends StatelessWidget {
+class TodoRowWidget extends StatelessWidget {
   final String data;
   final String? dateBeforComplete;
   final bool isComplete;
   final PriorityType priorityType;
   final void Function() updateIsComplete;
-  const TodoRowWodget({
+  const TodoRowWidget({
     super.key,
     required this.updateIsComplete,
     required this.priorityType,
