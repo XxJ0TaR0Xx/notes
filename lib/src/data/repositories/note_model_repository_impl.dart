@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
@@ -71,7 +69,7 @@ class NoteModelRepositoryImpl implements NoteRepository {
     }
   }
 
-  @override // переделывать без гета, используй оптимальный крин снизу
+  @override
   Future<Either<Failure, Unit>> updateNote(UpdateNoteUseCaseParams params) async {
     try {
       final DocumentReference<Map<String, dynamic>> ref = firebaseModule.firebaseFirestore.collection('users').doc(params.userId).collection('notes').doc(params.noteId);
@@ -82,7 +80,7 @@ class NoteModelRepositoryImpl implements NoteRepository {
       if (params.priorityType != null) updateData['priority'] = params.priorityType;
       if (params.isComplete != null) updateData['isComplete'] = params.isComplete;
 
-      return await ref.update(updateData).then<Either<Failure, Unit>>((value) {
+      return await ref.update(updateData).then<Either<Failure, Unit>>((_) {
         return const Right(unit);
       }).onError((error, stackTrace) {
         return const Left(FirebaseInternalFailure());
@@ -99,16 +97,12 @@ class NoteModelRepositoryImpl implements NoteRepository {
       final CollectionReference<Map<String, dynamic>> ref = firebaseModule.firebaseFirestore.collection('users').doc(params.userId).collection('notes');
       return await ref.get().then<Either<Failure, List<Note>>>((noteQuerySnapshot) {
         if (noteQuerySnapshot.docs.isEmpty) {
-          log('is empty');
           return Right(listNote);
         } else {
-          log('is NOT empty');
+          // ignore: avoid_function_literals_in_foreach_calls
           noteQuerySnapshot.docs.forEach((doc) {
-            log('Doc is ${doc.data()}');
             listNote.add(NoteModel.fromDoc(doc));
-            log('Doc is $doc');
           });
-          log('Do not exsit');
           return Right(listNote);
         }
       }).onError((error, stackTrace) {
