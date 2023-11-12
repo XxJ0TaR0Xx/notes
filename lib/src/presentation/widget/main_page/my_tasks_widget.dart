@@ -5,8 +5,10 @@ import 'package:notes/src/presentation/const/app_colors.dart';
 class MyTasksWidget extends StatelessWidget {
   final int count;
   final String iconPath;
+  final void Function() onPressed;
   const MyTasksWidget({
     super.key,
+    required this.onPressed,
     required this.count,
     required this.iconPath,
   });
@@ -37,8 +39,11 @@ class MyTasksWidget extends StatelessWidget {
                 AppColors.colorBlue,
                 BlendMode.srcIn,
               ),
-              child: SvgPicture.asset(
-                iconPath,
+              child: IconButton(
+                icon: SvgPicture.asset(
+                  iconPath,
+                ),
+                onPressed: onPressed,
               ),
             ),
             const SizedBox(width: 25.0),
