@@ -1,31 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:notes/src/domain/entities/enums/priority_type.dart';
 import 'package:notes/src/presentation/const/app_colors.dart';
 
-// ignore: must_be_immutable
-class MyCheckbox extends StatefulWidget {
-  bool isChecked;
-  final bool isImpotant;
+class MyCheckbox extends StatelessWidget {
+  final void Function() updateIsComplete;
+  final bool isChecked;
+  final PriorityType isImpotant;
 
-  MyCheckbox({
+  const MyCheckbox({
     super.key,
+    required this.updateIsComplete,
     required this.isChecked,
     required this.isImpotant,
   });
 
   @override
-  _MyCheckboxState createState() => _MyCheckboxState();
-}
-
-class _MyCheckboxState extends State<MyCheckbox> {
-  @override
   Widget build(BuildContext context) {
     Color borderColor;
 
-    if (widget.isChecked) {
+    if (isChecked) {
       borderColor = AppColors.colorGreen;
     } else {
-      if (widget.isImpotant) {
+      if (isImpotant == PriorityType.hight) {
         borderColor = AppColors.colorRed;
       } else {
         borderColor = AppColors.colorGray;
@@ -35,23 +32,19 @@ class _MyCheckboxState extends State<MyCheckbox> {
     return Material(
       borderRadius: BorderRadius.circular(4.0),
       child: InkWell(
-        onTap: () {
-          setState(() {
-            widget.isChecked = !widget.isChecked;
-          });
-        },
+        onTap: updateIsComplete,
         child: Container(
           width: 24.0,
           height: 24.0,
           decoration: BoxDecoration(
-            color: widget.isChecked ? AppColors.colorGreen : Colors.transparent,
+            color: isChecked ? AppColors.colorGreen : Colors.transparent,
             borderRadius: BorderRadius.circular(4.0),
             border: Border.all(
               width: 2.0,
               color: borderColor,
             ),
           ),
-          child: widget.isChecked ? SvgPicture.asset('assets/icons/check.svg') : null,
+          child: isChecked ? SvgPicture.asset('assets/icons/check.svg') : null,
         ),
       ),
     );
