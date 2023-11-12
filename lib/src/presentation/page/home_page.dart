@@ -102,6 +102,7 @@ class HomePage extends StatelessWidget {
                               deleteNoteUseCaseParams: DeleteNoteUseCaseParams(userId: userId, noteId: note.id!),
                             );
                             homePageController.noteList.removeAt(index);
+                            homePageController.notCompleteNoteList.removeAt(index);
                           },
                         );
                       },
