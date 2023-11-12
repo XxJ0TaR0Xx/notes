@@ -36,6 +36,8 @@ class DissmisableRowWidget extends StatelessWidget {
           functionUpdate();
         }
       },
+
+      /// Обноваить заметку
       background: Container(
         color: AppColors.colorGreen,
         alignment: Alignment.centerLeft,
@@ -46,6 +48,8 @@ class DissmisableRowWidget extends StatelessWidget {
           color: AppColors.colorWhite,
         ),
       ),
+
+      /// Удалить заметку
       secondaryBackground: Container(
         color: AppColors.colorRed,
         alignment: Alignment.centerRight,
@@ -56,6 +60,8 @@ class DissmisableRowWidget extends StatelessWidget {
           color: AppColors.colorWhite,
         ),
       ),
+
+      /// Сама строка заметки
       child: TodoRowWodget(
         updateIsComplete: functionUpdate,
         priorityType: priorityType,
