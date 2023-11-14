@@ -141,7 +141,11 @@ void main() async {
       ///////////////////////
 
       //UpdateNoteUseCase Test
-      Future<Either<Failure, Unit>> updateResponse() => noteRepositoryTest.updateNoteUseCase(list.last.id!, 'Test is correct');
+
+      //! Extract 'update' value to local variable
+      const String updateData = 'Test is correct';
+
+      Future<Either<Failure, Unit>> updateResponse() => noteRepositoryTest.updateNoteUseCase(list.last.id!, updateData);
       expect(
         await updateResponse(),
         isA<Right>(),
@@ -152,11 +156,34 @@ void main() async {
       //! Expected: Right<dynamic, Note>:<Right(Note(()))>
       //! Actual: Right<Failure, Note>:<Right(Note(G8DCphFnil6JBr1WLLyz))>
 
-      // Future<Either<Failure, Note>> readCorrectResponse() => noteRepositoryTest.readNoteUseCase(list.last.id!);
-      // expect(
-      //   await readCorrectResponse(),
-      //   const Right(Note(data: 'Test is correct', isComplete: false, priorityType: PriorityType.not)),
-      //   reason: 'Update isn\'t complete',
+      noteRepositoryTest
+          .readNoteUseCase(
+        list.last.id!,
+      )
+          .then(
+        (value) {
+          expect(
+            value,
+            isA<Right<Failure, Note>>(),
+            reason: 'unexpected readNoteUseCase behaviour',
+          );
+
+          final Right<Failure, Note> data = value as Right<Failure, Note>;
+
+          expect(
+            data.value.data,
+            updateData,
+            reason: 'updateNoteUseCase does\'t really update data inside database',
+          );
+        },
+      ).onError(
+        (error, _) {
+          fail('readNoteUseCase failed: $error');
+        },
+      );
+
+      // readCorrectResponse().then(
+      //   (value) => null,
       // );
 
       ///////////////////////
