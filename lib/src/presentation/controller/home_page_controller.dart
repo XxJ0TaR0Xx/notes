@@ -12,6 +12,7 @@ import 'package:notes/src/domain/entities/enums/priority_type.dart';
 import 'package:notes/src/domain/entities/params_usecases/usecases.dart';
 import 'package:notes/src/domain/repositories/note_repository.dart';
 import 'package:notes/src/domain/usecase/note_usecases.dart';
+import 'package:notes/src/domain/utils/date_parser.dart';
 import 'package:notes/src/presentation/page/forbidden_page.dart';
 
 @Singleton()
@@ -142,5 +143,9 @@ class HomePageController with ChangeNotifier {
     }
 
     notifyListeners();
+  }
+
+  String parsDate(DateTime? dateTime) {
+    return formatDate(dateTime);
   }
 }
