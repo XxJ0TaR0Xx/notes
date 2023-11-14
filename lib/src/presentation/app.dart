@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:notes/core/services/services.dart';
 import 'package:notes/src/presentation/const/app_colors.dart';
 import 'package:notes/src/presentation/controller/home_page_controller.dart';
+import 'package:notes/src/presentation/controller/note_page_controller.dart';
 import 'package:notes/src/presentation/page/forbidden_page.dart';
 import 'package:notes/src/presentation/page/home_page.dart';
 import 'package:notes/src/presentation/page/note_page.dart';
@@ -47,7 +48,9 @@ class App extends StatelessWidget {
               );
 
             case NotePage.route:
-              return const NotePage();
+              return NotePage(
+                notePageController: services<NotePageController>(),
+              );
 
             default:
               return const ForbiddenPage();
