@@ -25,7 +25,11 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const String userId = 'fglGLyHQ2KqF4lZof2sJ';
-    homePageController.readAllNote(readAllNoteUseCaseParams: const ReadAllNoteUseCaseParams(userId: userId));
+    homePageController.readAllNote(
+      readAllNoteUseCaseParams: const ReadAllNoteUseCaseParams(
+        userId: userId,
+      ),
+    );
 
     FutureOr<void> onPressedAddNote() async {
       Navigator.of(context).pushNamed(NotePage.route);
@@ -78,7 +82,7 @@ class HomePage extends StatelessWidget {
                           isComplete: note.isComplete,
                           keyItem: index.toString(),
                           data: note.data,
-                          date: note.dateBeforComplete.toString(),
+                          date: homePageController.parsDate(note.dateBeforComplete),
 
                           /// Функция обновления
                           functionUpdate: () {
