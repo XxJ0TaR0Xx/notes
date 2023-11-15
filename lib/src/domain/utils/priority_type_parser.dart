@@ -5,6 +5,10 @@ final class PriorityTypeParser {
   static const not = 'not';
   static const hight = 'hight';
 
+  static const lowRu = 'Низкая';
+  static const notRu = 'Нет';
+  static const hightRu = 'Высокая';
+
   static String priorityToStr(PriorityType params) {
     switch (params) {
       case PriorityType.not:
@@ -13,6 +17,19 @@ final class PriorityTypeParser {
         return low;
       case PriorityType.hight:
         return hight;
+      default:
+        throw Exception('Unregistered PriorityType');
+    }
+  }
+
+  static String priorityToStrRu(PriorityType params) {
+    switch (params) {
+      case PriorityType.not:
+        return notRu;
+      case PriorityType.low:
+        return lowRu;
+      case PriorityType.hight:
+        return hightRu;
       default:
         throw Exception('Unregistered PriorityType');
     }
