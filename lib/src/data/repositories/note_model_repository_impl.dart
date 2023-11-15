@@ -9,6 +9,7 @@ import 'package:notes/src/domain/entities/enums/priority_type.dart';
 import 'package:notes/src/domain/entities/params_usecases/usecases.dart';
 import 'package:notes/src/domain/failures/note_failures.dart';
 import 'package:notes/src/domain/repositories/note_repository.dart';
+import 'package:notes/src/domain/utils/priority_type_parser.dart';
 
 @Singleton(as: NoteRepository)
 class NoteModelRepositoryImpl implements NoteRepository {
@@ -75,9 +76,14 @@ class NoteModelRepositoryImpl implements NoteRepository {
       final DocumentReference<Map<String, dynamic>> ref = firebaseModule.firebaseFirestore.collection('users').doc(params.userId).collection('notes').doc(params.noteId);
 
       Map<String, dynamic> updateData = {};
+
       if (params.data != null) updateData['data'] = params.data;
-      if (params.dateBeforComplete != null) updateData['dateBeforComplete'] = params.dateBeforComplete;
-      if (params.priorityType != null) updateData['priority'] = params.priorityType;
+      if (params.dateBeforComplete != null) {
+        updateData['dateBeforComplete'] = params.dateBeforComplete.toString();
+      } else {
+        updateData['dateBeforComplete'] = params.dateBeforComplete;
+      }
+      if (params.priorityType != null) updateData['priority'] = PriorityTypeParser.priorityToStr(params.priorityType!);
       if (params.isComplete != null) updateData['isComplete'] = params.isComplete;
 
       return await ref.update(updateData).then<Either<Failure, Unit>>((_) {
