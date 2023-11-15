@@ -6,7 +6,8 @@ import 'package:notes/src/presentation/widget/row/todo_row_widget.dart';
 
 class DissmisableRowWidget extends StatelessWidget {
   final void Function() functionUpdate;
-  final Function functionDismissed;
+  final void Function() functionDismissed;
+  final void Function() toUpdateNote;
   final bool isComplete;
   final String keyItem;
   final String data;
@@ -21,6 +22,7 @@ class DissmisableRowWidget extends StatelessWidget {
     required this.functionDismissed,
     required this.data,
     required this.keyItem,
+    required this.toUpdateNote,
     this.date,
   });
 
@@ -68,6 +70,7 @@ class DissmisableRowWidget extends StatelessWidget {
         isComplete: isComplete,
         data: data,
         dateBeforComplete: date,
+        toUpdateNote: toUpdateNote,
       ),
     );
   }

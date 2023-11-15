@@ -12,6 +12,7 @@ import 'package:notes/src/domain/entities/params_usecases/usecases.dart';
 import 'package:notes/src/domain/repositories/note_repository.dart';
 import 'package:notes/src/domain/usecase/note_usecases.dart';
 import 'package:notes/src/domain/utils/date_parser.dart';
+import 'package:notes/src/domain/utils/priority_type_parser.dart';
 import 'package:notes/src/presentation/const/app_colors.dart';
 import 'package:notes/src/presentation/page/forbidden_page.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -20,11 +21,15 @@ import 'package:table_calendar/table_calendar.dart';
 class NotePageController with ChangeNotifier {
   late final NoteRepository noteRepository;
   late final CreateNoteUseCase createNoteUseCase;
+  late final UpdateNoteUseCase updateNoteUseCase;
 
   NotePageController() {
     noteRepository = NoteModelRepositoryImpl(firebaseModule: services<FirebaseModule>());
     createNoteUseCase = CreateNoteUseCase(noteRepository: noteRepository);
+    updateNoteUseCase = UpdateNoteUseCase(noteRepository: noteRepository);
   }
+
+  final TextEditingController textDataController = TextEditingController();
 
   bool? _switchTurn;
   bool get switchTurn => _switchTurn ?? false;
@@ -33,19 +38,22 @@ class NotePageController with ChangeNotifier {
   String get dateBeforCompleteStr => _dateBeforCompleteStr ?? '';
 
   DateTime? _dateBeforComplete;
-  DateTime? get dateBeforComplete => _dateBeforComplete ?? DateTime.now();
+  DateTime? get dateBeforComplete => _dateBeforComplete;
 
-  PriorityType? _priorityType;
+  PriorityType? _priorityType = PriorityType.not;
   PriorityType get priorityType => _priorityType ?? PriorityType.not;
 
   String? _priorityTypeText;
   String get priorityTypeText => _priorityTypeText ?? 'Нет';
+
+  bool isUpdate = false;
 
   /// Изменение положения switch
   void turnSwitch() {
     if (switchTurn) {
       _switchTurn = !switchTurn;
       _dateBeforCompleteStr = null;
+      _dateBeforComplete = null;
     } else {
       _switchTurn = !switchTurn;
       _dateBeforCompleteStr = 'Выберите дату';
@@ -127,7 +135,6 @@ class NotePageController with ChangeNotifier {
     /// Форматируйте выбранную дату
     if (selectedDate != null) {
       _dateBeforCompleteStr = formatDate(selectedDate);
-      //!
       _dateBeforComplete = selectedDate;
     }
 
@@ -167,18 +174,59 @@ class NotePageController with ChangeNotifier {
 
     serverOrResult.fold(
       (failure) {
-        log("Failure $failure");
         return const ForbiddenPage();
       },
-      (unit) {
-        log("All is Okey");
-      },
+      (unit) {},
     );
-    _switchTurn = null;
-    _dateBeforCompleteStr = null;
-    _dateBeforComplete = null;
-    _priorityType = null;
-    _priorityTypeText = null;
+
+    notifyListeners();
+  }
+
+  void showUpdateFields({
+    PriorityType? updatePriorityType,
+    String? updateData,
+    DateTime? updateDateBeforComplete,
+  }) {
+    if (updateData != null || updatePriorityType != null || updateDateBeforComplete != null) {
+      isUpdate = true;
+    } else {
+      isUpdate = false;
+    }
+
+    _priorityType = updatePriorityType ?? PriorityType.not;
+    _priorityTypeText = PriorityTypeParser.priorityToStrRu(_priorityType!);
+
+    textDataController.text = updateData ?? '';
+
+    if (updateDateBeforComplete == null) {
+      _switchTurn = false;
+    } else {
+      _switchTurn = true;
+    }
+
+    _dateBeforComplete = updateDateBeforComplete;
+    _dateBeforCompleteStr = formatDate(_dateBeforComplete);
+
+    notifyListeners();
+  }
+
+  Future<void> updateNote({required UpdateNoteUseCaseParams updateNoteUseCaseParams}) async {
+    final Either<Failure, Unit> serverOrResult = await updateNoteUseCase.call(
+      UpdateNoteUseCaseParams(
+        userId: updateNoteUseCaseParams.userId,
+        noteId: updateNoteUseCaseParams.noteId,
+        data: updateNoteUseCaseParams.data,
+        dateBeforComplete: updateNoteUseCaseParams.dateBeforComplete,
+        priorityType: updateNoteUseCaseParams.priorityType,
+      ),
+    );
+
+    serverOrResult.fold(
+      (failure) {
+        return const ForbiddenPage();
+      },
+      (unit) {},
+    );
 
     notifyListeners();
   }

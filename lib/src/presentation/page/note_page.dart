@@ -1,9 +1,8 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:notes/src/domain/entities/enums/priority_type.dart';
 import 'package:notes/src/domain/entities/params_usecases/usecases.dart';
+import 'package:notes/src/domain/utils/priority_type_parser.dart';
 import 'package:notes/src/presentation/const/app_colors.dart';
 import 'package:notes/src/presentation/controller/note_page_controller.dart';
 
@@ -11,19 +10,29 @@ class NotePage extends StatelessWidget {
   static const String route = '/note';
   final NotePageController notePageController;
 
-  NotePage({
+  final String? updateData;
+  final PriorityType? updatePriorityType;
+  final DateTime? updateDateBeforComplete;
+  final String? updateNoteId;
+
+  const NotePage({
     super.key,
     required this.notePageController,
+    this.updateData,
+    this.updatePriorityType,
+    this.updateDateBeforComplete,
+    this.updateNoteId,
   });
-  final TextEditingController textDataController = TextEditingController();
   final String userId = 'fglGLyHQ2KqF4lZof2sJ';
-
-  final String not = 'Нет';
-  final String low = 'Низкая';
-  final String hight = 'Высокая';
 
   @override
   Widget build(BuildContext context) {
+    notePageController.showUpdateFields(
+      updatePriorityType: updatePriorityType,
+      updateData: updateData,
+      updateDateBeforComplete: updateDateBeforComplete,
+    );
+
     return Scaffold(
       backgroundColor: AppColors.backPrimaryColor,
       appBar: AppBar(
@@ -44,16 +53,30 @@ class NotePage extends StatelessWidget {
               builder: (BuildContext context, Widget? child) {
                 return TextButton(
                   onPressed: () {
-                    notePageController.createNote(
-                      context: context,
-                      createNoteUseCaseParams: CreateNoteUseCaseParams(
-                        userId: userId,
-                        data: textDataController.text,
-                        dateBeforComplete: notePageController.dateBeforComplete,
-                        isComplete: false,
-                        priorityType: notePageController.priorityType,
-                      ),
-                    );
+                    if (!notePageController.isUpdate) {
+                      notePageController.createNote(
+                        context: context,
+                        createNoteUseCaseParams: CreateNoteUseCaseParams(
+                          userId: userId,
+                          data: notePageController.textDataController.text,
+                          dateBeforComplete: notePageController.dateBeforComplete,
+                          isComplete: false,
+                          priorityType: notePageController.priorityType,
+                        ),
+                      );
+                    } else {
+                      notePageController.updateNote(
+                        updateNoteUseCaseParams: UpdateNoteUseCaseParams(
+                          userId: userId,
+                          noteId: updateNoteId!,
+                          data: notePageController.textDataController.text,
+                          dateBeforComplete: notePageController.dateBeforComplete,
+                          priorityType: notePageController.priorityType,
+                        ),
+                      );
+
+                      Navigator.of(context).pop();
+                    }
                   },
                   child: const Text(
                     'СОХРАНИТЬ',
@@ -88,7 +111,7 @@ class NotePage extends StatelessWidget {
 
                     /// Вводт описания для заметки
                     child: TextField(
-                      controller: textDataController,
+                      controller: notePageController.textDataController,
                       autocorrect: true,
                       keyboardType: TextInputType.multiline,
                       maxLines: null,
@@ -131,21 +154,21 @@ class NotePage extends StatelessWidget {
                           },
                           itemBuilder: (context) => <PopupMenuEntry<PriorityType>>[
                             PopupMenuItem<PriorityType>(
-                              onTap: () => notePageController.popUpMenuChangeText(text: not),
+                              onTap: () => notePageController.popUpMenuChangeText(text: PriorityTypeParser.notRu),
                               value: PriorityType.not,
-                              child: Text(not),
+                              child: const Text(PriorityTypeParser.notRu),
                             ),
                             PopupMenuItem<PriorityType>(
-                              onTap: () => notePageController.popUpMenuChangeText(text: low),
+                              onTap: () => notePageController.popUpMenuChangeText(text: PriorityTypeParser.lowRu),
                               value: PriorityType.low,
-                              child: Text(low),
+                              child: const Text(PriorityTypeParser.lowRu),
                             ),
                             PopupMenuItem<PriorityType>(
-                              onTap: () => notePageController.popUpMenuChangeText(text: hight),
+                              onTap: () => notePageController.popUpMenuChangeText(text: PriorityTypeParser.hightRu),
                               value: PriorityType.hight,
-                              child: Text(
-                                hight,
-                                style: const TextStyle(color: Colors.red),
+                              child: const Text(
+                                PriorityTypeParser.hightRu,
+                                style: TextStyle(color: Colors.red),
                               ),
                             ),
                           ],

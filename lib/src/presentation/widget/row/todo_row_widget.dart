@@ -10,12 +10,14 @@ class TodoRowWidget extends StatelessWidget {
   final bool isComplete;
   final PriorityType priorityType;
   final void Function() updateIsComplete;
+  final void Function() toUpdateNote;
   const TodoRowWidget({
     super.key,
     required this.updateIsComplete,
     required this.priorityType,
     required this.isComplete,
     required this.data,
+    required this.toUpdateNote,
     this.dateBeforComplete,
   });
 
@@ -108,7 +110,7 @@ class TodoRowWidget extends StatelessWidget {
             ),
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: toUpdateNote,
             icon: SvgPicture.asset('assets/icons/info_outline.svg'),
           )
         ],

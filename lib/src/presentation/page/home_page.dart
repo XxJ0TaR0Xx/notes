@@ -1,10 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:notes/core/services/services.dart';
 import 'package:notes/src/domain/entities/entities.dart';
+import 'package:notes/src/domain/entities/enums/priority_type.dart';
 import 'package:notes/src/domain/entities/params_usecases/usecases.dart';
 import 'package:notes/src/presentation/const/app_colors.dart';
 import 'package:notes/src/presentation/controller/home_page_controller.dart';
+import 'package:notes/src/presentation/controller/note_page_controller.dart';
 import 'package:notes/src/presentation/page/note_page.dart';
 import 'package:notes/src/presentation/widget/main_page/add_todo_row_widget.dart';
 import 'package:notes/src/presentation/widget/main_page/back_container_widget.dart';
@@ -33,6 +36,26 @@ class HomePage extends StatelessWidget {
 
     FutureOr<void> onPressedAddNote() async {
       Navigator.of(context).pushNamed(NotePage.route);
+    }
+
+    FutureOr<void> onPressedUpdateNote(
+      String updateData,
+      PriorityType priorityType,
+      DateTime? updateDateBeforComplete,
+      String? updateNoteId,
+    ) async {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => NotePage(
+            notePageController: services<NotePageController>(),
+            updateData: updateData,
+            updatePriorityType: priorityType,
+            updateDateBeforComplete: updateDateBeforComplete,
+            updateNoteId: updateNoteId,
+          ),
+        ),
+      );
     }
 
     return Scaffold(
@@ -84,7 +107,7 @@ class HomePage extends StatelessWidget {
                           data: note.data,
                           date: homePageController.parsDate(note.dateBeforComplete),
 
-                          /// Функция обновления
+                          /// Функция смены флажка isComplet
                           functionUpdate: () {
                             homePageController.updateIsComplete(
                               updateNoteUseCaseParams: UpdateNoteUseCaseParams(
@@ -107,6 +130,16 @@ class HomePage extends StatelessWidget {
                             );
                             homePageController.noteList.removeAt(index);
                             homePageController.notCompleteNoteList.removeAt(index);
+                          },
+
+                          /// Функция для обновления заметки
+                          toUpdateNote: () {
+                            onPressedUpdateNote(
+                              note.data,
+                              note.priorityType,
+                              note.dateBeforComplete,
+                              note.id,
+                            );
                           },
                         );
                       },
