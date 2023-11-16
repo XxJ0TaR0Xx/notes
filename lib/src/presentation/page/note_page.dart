@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:notes/core/services/services.dart';
 import 'package:notes/src/domain/entities/enums/priority_type.dart';
 import 'package:notes/src/domain/entities/params_usecases/usecases.dart';
 import 'package:notes/src/domain/utils/priority_type_parser.dart';
 import 'package:notes/src/presentation/const/app_colors.dart';
+import 'package:notes/src/presentation/controller/home_page_controller.dart';
 import 'package:notes/src/presentation/controller/note_page_controller.dart';
+import 'package:notes/src/presentation/page/home_page.dart';
 
 class NotePage extends StatelessWidget {
   static const String route = '/home/note';
@@ -23,11 +26,11 @@ class NotePage extends StatelessWidget {
     this.updateDateBeforComplete,
     this.updateNoteId,
   });
-  final String userId = 'fglGLyHQ2KqF4lZof2sJ';
 
   @override
   Widget build(BuildContext context) {
     notePageController.getUserId();
+
     notePageController.showUpdateFields(
       updatePriorityType: updatePriorityType,
       updateData: updateData,
@@ -76,7 +79,14 @@ class NotePage extends StatelessWidget {
                         ),
                       );
 
-                      Navigator.of(context).pop();
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => HomePage(
+                            homePageController: services<HomePageController>(),
+                          ),
+                        ),
+                      );
                     }
                   },
                   child: const Text(
