@@ -4,6 +4,7 @@ import 'package:injectable/injectable.dart';
 import 'package:notes/core/failure/failure.dart';
 import 'package:notes/core/firebase/firebase_module.dart';
 import 'package:notes/core/services/services.dart';
+import 'package:notes/src/data/datasourse/user_datasourse.dart';
 import 'package:notes/src/data/repositories/note_model_repository_impl.dart';
 import 'package:notes/src/domain/entities/enums/priority_type.dart';
 import 'package:notes/src/domain/entities/params_usecases/usecases.dart';
@@ -20,8 +21,9 @@ class NotePageController with ChangeNotifier {
   late final NoteRepository noteRepository;
   late final CreateNoteUseCase createNoteUseCase;
   late final UpdateNoteUseCase updateNoteUseCase;
+  late final UserDatasourse userDatasourse;
 
-  NotePageController() {
+  NotePageController({required this.userDatasourse}) {
     noteRepository = NoteModelRepositoryImpl(firebaseModule: services<FirebaseModule>());
     createNoteUseCase = CreateNoteUseCase(noteRepository: noteRepository);
     updateNoteUseCase = UpdateNoteUseCase(noteRepository: noteRepository);
@@ -43,6 +45,9 @@ class NotePageController with ChangeNotifier {
 
   String? _priorityTypeText;
   String get priorityTypeText => _priorityTypeText ?? 'Нет';
+
+  String? _userId;
+  String get userId => _userId ?? '';
 
   bool isUpdate = false;
 
@@ -165,6 +170,10 @@ class NotePageController with ChangeNotifier {
         color: AppColors.lablTertiaryColor,
       );
     }
+  }
+
+  Future<void> getUserId() async {
+    _userId = await userDatasourse.getUserId();
   }
 
   Future<void> createNoteController({required CreateNoteUseCaseParams createNoteUseCaseParams}) async {

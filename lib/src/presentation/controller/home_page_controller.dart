@@ -4,6 +4,7 @@ import 'package:injectable/injectable.dart';
 import 'package:notes/core/failure/failure.dart';
 import 'package:notes/core/firebase/firebase_module.dart';
 import 'package:notes/core/services/services.dart';
+import 'package:notes/src/data/datasourse/user_datasourse.dart';
 import 'package:notes/src/data/repositories/note_model_repository_impl.dart';
 import 'package:notes/src/domain/entities/entities.dart';
 import 'package:notes/src/domain/entities/enums/priority_type.dart';
@@ -20,8 +21,9 @@ class HomePageController with ChangeNotifier {
   late final ReadAllNoteUseCase readAllNoteUseCase;
   late final UpdateNoteUseCase updateNoteUseCase;
   late final ReadNoteUseCase readNoteUseCase;
+  late final UserDatasourse userDatasourse;
 
-  HomePageController() {
+  HomePageController({required this.userDatasourse}) {
     noteRepository = NoteModelRepositoryImpl(firebaseModule: services<FirebaseModule>());
     deleteNoteUseCase = DeleteNoteUseCase(noteRepository: noteRepository);
     readAllNoteUseCase = ReadAllNoteUseCase(noteRepository: noteRepository);
@@ -46,6 +48,9 @@ class HomePageController with ChangeNotifier {
   int _doneNote = 0;
   int get doneNote => _doneNote;
 
+  String? _userId;
+  String get userId => _userId ?? '';
+
   countDone(List<Note> allNotes) {
     int i = 0;
     List<Note> buffNotCompleteNoteList = [];
@@ -59,6 +64,12 @@ class HomePageController with ChangeNotifier {
     }
     notCompleteNoteList = buffNotCompleteNoteList;
     _doneNote = i;
+  }
+
+  Future<void> getUserId() async {
+    _userId = await userDatasourse.getUserId();
+
+    notifyListeners();
   }
 
   Future<void> readAllNote({required ReadAllNoteUseCaseParams readAllNoteUseCaseParams}) async {
