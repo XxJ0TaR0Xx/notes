@@ -20,13 +20,13 @@ class UserModelRepositoryImpl implements UserRepository {
   @override // ты не используешь id из CreateUserUseCaseParams params а генерируешь новый
   Future<Either<Failure, Unit>> createUser(CreateUserUseCaseParams params) async {
     try {
-      final CollectionReference<Map<String, dynamic>> ref = firebaseModule.firebaseFirestore.collection('users');
+      final DocumentReference<Map<String, dynamic>> ref = firebaseModule.firebaseFirestore.collection('users').doc(params.userId);
       User user = User(
         name: params.userName,
         avatarUrl: params.avatarUrl ?? '',
       );
 
-      return ref.add(UserModel.toFirebase(user)).then<Either<Failure, Unit>>((_) {
+      return ref.set(UserModel.toFirebase(user)).then<Either<Failure, Unit>>((_) {
         return const Right(unit);
       }).onError((error, stackTrace) {
         return const Left(FirebaseUserInternalFailure());

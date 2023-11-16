@@ -30,7 +30,6 @@ class AuthorizationPageControlle with ChangeNotifier {
       if (userCredential.user != null && userId == null) {
         userDatasourse.saveUserId(userCredential.user!.uid);
         String? updateUserId = await userDatasourse.getUserId();
-
         userModelRepositoryImpl.createUser(
           CreateUserUseCaseParams(
             userId: updateUserId!,
