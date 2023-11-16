@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:notes/core/services/services.dart';
 import 'package:notes/src/presentation/const/app_colors.dart';
 import 'package:notes/src/presentation/controller/authorization_page_controller.dart';
+import 'package:notes/src/presentation/controller/home_page_controller.dart';
 import 'package:notes/src/presentation/page/home_page.dart';
 
 class AuthorizationPage extends StatelessWidget {
@@ -17,7 +19,14 @@ class AuthorizationPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     FutureOr<void> onPressedAddNote() async {
-      Navigator.of(context).pushNamed(HomePage.route);
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HomePage(
+            homePageController: services<HomePageController>(),
+          ),
+        ),
+      );
     }
 
     return Scaffold(
