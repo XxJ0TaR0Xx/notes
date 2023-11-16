@@ -3,7 +3,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:notes/src/domain/entities/enums/priority_type.dart';
 import 'package:notes/src/domain/entities/params_usecases/usecases.dart';
 import 'package:notes/src/domain/utils/priority_type_parser.dart';
-import 'package:notes/src/domain/utils/user_id.dart';
 import 'package:notes/src/presentation/const/app_colors.dart';
 import 'package:notes/src/presentation/controller/note_page_controller.dart';
 
@@ -28,6 +27,7 @@ class NotePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    notePageController.getUserId();
     notePageController.showUpdateFields(
       updatePriorityType: updatePriorityType,
       updateData: updateData,
@@ -58,7 +58,7 @@ class NotePage extends StatelessWidget {
                       notePageController.createNote(
                         context: context,
                         createNoteUseCaseParams: CreateNoteUseCaseParams(
-                          userId: UserId.userId,
+                          userId: notePageController.userId,
                           data: notePageController.textDataController.text,
                           dateBeforComplete: notePageController.dateBeforComplete,
                           isComplete: false,
@@ -68,7 +68,7 @@ class NotePage extends StatelessWidget {
                     } else {
                       notePageController.updateNote(
                         updateNoteUseCaseParams: UpdateNoteUseCaseParams(
-                          userId: UserId.userId,
+                          userId: notePageController.userId,
                           noteId: updateNoteId!,
                           data: notePageController.textDataController.text,
                           dateBeforComplete: notePageController.dateBeforComplete,

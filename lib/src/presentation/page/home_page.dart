@@ -5,7 +5,6 @@ import 'package:notes/core/services/services.dart';
 import 'package:notes/src/domain/entities/entities.dart';
 import 'package:notes/src/domain/entities/enums/priority_type.dart';
 import 'package:notes/src/domain/entities/params_usecases/usecases.dart';
-import 'package:notes/src/domain/utils/user_id.dart';
 import 'package:notes/src/presentation/const/app_colors.dart';
 import 'package:notes/src/presentation/controller/home_page_controller.dart';
 import 'package:notes/src/presentation/controller/note_page_controller.dart';
@@ -28,14 +27,6 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const String userId = 'fglGLyHQ2KqF4lZof2sJ';
-
-    homePageController.readAllNote(
-      readAllNoteUseCaseParams: ReadAllNoteUseCaseParams(
-        userId: UserId.userId,
-      ),
-    );
-
     FutureOr<void> onPressedAddNote() async {
       Navigator.of(context).pushNamed(NotePage.route);
     }
@@ -66,97 +57,118 @@ class HomePage extends StatelessWidget {
         backgroundColor: AppColors.backPrimaryColor,
         elevation: 0.0,
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(
-                top: 50.0,
-                left: 60.0,
+      body: FutureBuilder<void>(
+        future: homePageController.getUserId(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            /// После завершения getUserId вызываем readAllNote
+            homePageController.readAllNote(
+              readAllNoteUseCaseParams: ReadAllNoteUseCaseParams(
+                userId: homePageController.userId,
               ),
-              child: AnimatedBuilder(
-                animation: homePageController,
-                builder: (BuildContext context, Widget? child) {
-                  return MyTasksWidget(
-                    onPressed: () => homePageController.showDoneNote(),
-                    count: homePageController.doneNote,
-                    iconPath: homePageController.pathIcon,
-                  );
-                },
-              ),
-            ),
-            Padding(
-              // ignore: prefer_const_constructors
-              padding: EdgeInsets.only(
-                right: 8.0,
-                left: 8.0,
-                top: 16.0,
-              ),
-              child: BackContainer(
-                child: AnimatedBuilder(
-                  animation: homePageController,
-                  builder: (BuildContext context, Widget? child) {
-                    return ListView.builder(
-                      physics: const NeverScrollableScrollPhysics(), // Отключаем скроллинг ListView.builder
-                      shrinkWrap: true,
-                      itemCount: homePageController.noteList.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        Note note = homePageController.noteList[index];
-                        return DissmisableRowWidget(
-                          priorityType: note.priorityType,
-                          isComplete: note.isComplete,
-                          keyItem: index.toString(),
-                          data: note.data,
-                          date: homePageController.parsDate(note.dateBeforComplete),
+            );
 
-                          /// Функция смены флажка isComplet
-                          functionUpdate: () {
-                            homePageController.updateIsComplete(
-                              updateNoteUseCaseParams: UpdateNoteUseCaseParams(
-                                userId: UserId.userId,
-                                noteId: note.id!,
-                                isComplete: !note.isComplete,
-                              ),
-                            );
-                            homePageController.readAllNote(
-                              readAllNoteUseCaseParams: ReadAllNoteUseCaseParams(
-                                userId: UserId.userId,
-                              ),
-                            );
-                          },
-
-                          /// Функция удаления
-                          functionDismissed: () {
-                            homePageController.deleteNote(
-                              deleteNoteUseCaseParams: DeleteNoteUseCaseParams(userId: UserId.userId, noteId: note.id!),
-                            );
-                            homePageController.noteList.removeAt(index);
-                            homePageController.notCompleteNoteList.removeAt(index);
-                          },
-
-                          /// Функция для обновления заметки
-                          toUpdateNote: () {
-                            onPressedUpdateNote(
-                              note.data,
-                              note.priorityType,
-                              note.dateBeforComplete,
-                              note.id,
-                            );
-                          },
+            return SingleChildScrollView(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      top: 50.0,
+                      left: 60.0,
+                    ),
+                    child: AnimatedBuilder(
+                      animation: homePageController,
+                      builder: (BuildContext context, Widget? child) {
+                        return MyTasksWidget(
+                          onPressed: () => homePageController.showDoneNote(),
+                          count: homePageController.doneNote,
+                          iconPath: homePageController.pathIcon,
                         );
                       },
-                    );
-                  },
-                ),
+                    ),
+                  ),
+                  Padding(
+                    // ignore: prefer_const_constructors
+                    padding: EdgeInsets.only(
+                      right: 8.0,
+                      left: 8.0,
+                      top: 16.0,
+                    ),
+                    child: BackContainer(
+                      child: AnimatedBuilder(
+                        animation: homePageController,
+                        builder: (BuildContext context, Widget? child) {
+                          return ListView.builder(
+                            physics: const NeverScrollableScrollPhysics(), // Отключаем скроллинг ListView.builder
+                            shrinkWrap: true,
+                            itemCount: homePageController.noteList.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              Note note = homePageController.noteList[index];
+                              return DissmisableRowWidget(
+                                priorityType: note.priorityType,
+                                isComplete: note.isComplete,
+                                keyItem: index.toString(),
+                                data: note.data,
+                                date: homePageController.parsDate(note.dateBeforComplete),
+
+                                /// Функция смены флажка isComplet
+                                functionUpdate: () {
+                                  homePageController.updateIsComplete(
+                                    updateNoteUseCaseParams: UpdateNoteUseCaseParams(
+                                      userId: homePageController.userId,
+                                      noteId: note.id!,
+                                      isComplete: !note.isComplete,
+                                    ),
+                                  );
+                                  homePageController.readAllNote(
+                                    readAllNoteUseCaseParams: ReadAllNoteUseCaseParams(
+                                      userId: homePageController.userId,
+                                    ),
+                                  );
+                                },
+
+                                /// Функция удаления
+                                functionDismissed: () {
+                                  homePageController.deleteNote(
+                                    deleteNoteUseCaseParams: DeleteNoteUseCaseParams(
+                                      userId: homePageController.userId,
+                                      noteId: note.id!,
+                                    ),
+                                  );
+                                  homePageController.noteList.removeAt(index);
+                                  homePageController.notCompleteNoteList.removeAt(index);
+                                },
+
+                                /// Функция для обновления заметки
+                                toUpdateNote: () {
+                                  onPressedUpdateNote(
+                                    note.data,
+                                    note.priorityType,
+                                    note.dateBeforComplete,
+                                    note.id,
+                                  );
+                                },
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                  ContainerForRowWidget(
+                    child: AddToDoRowWidget(
+                      onPressed: onPressedAddNote,
+                    ),
+                  ),
+                ],
               ),
-            ),
-            ContainerForRowWidget(
-              child: AddToDoRowWidget(
-                onPressed: onPressedAddNote,
-              ),
-            ),
-          ],
-        ),
+            );
+          } else {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        },
       ),
       floatingActionButton: FabWidget(
         onPressed: onPressedAddNote,
