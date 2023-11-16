@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
@@ -97,12 +95,9 @@ class HomePageController with ChangeNotifier {
 
     serverOrResult.fold(
       (failure) {
-        log("Failure $failure");
         return const ForbiddenPage();
       },
-      (update) {
-        log("Update $update");
-      },
+      (update) {},
     );
 
     notifyListeners();
@@ -113,7 +108,6 @@ class HomePageController with ChangeNotifier {
 
     serverOrResult.fold(
       (failure) {
-        log("Failure $failure");
         return const ForbiddenPage();
       },
       (note) {
@@ -132,8 +126,6 @@ class HomePageController with ChangeNotifier {
     } else {
       _pathIcon = visibilityPath;
     }
-
-    log("notCompleteNoteList $notCompleteNoteList");
 
     if ((_noteList != notCompleteNoteList) && (_noteList != null)) {
       noteListBuffer = _noteList!;
