@@ -5,6 +5,7 @@ import 'package:notes/core/services/services.dart';
 import 'package:notes/src/domain/entities/entities.dart';
 import 'package:notes/src/domain/entities/enums/priority_type.dart';
 import 'package:notes/src/domain/entities/params_usecases/usecases.dart';
+import 'package:notes/src/domain/utils/user_id.dart';
 import 'package:notes/src/presentation/const/app_colors.dart';
 import 'package:notes/src/presentation/controller/home_page_controller.dart';
 import 'package:notes/src/presentation/controller/note_page_controller.dart';
@@ -17,7 +18,7 @@ import 'package:notes/src/presentation/widget/main_page/my_tasks_widget.dart';
 import 'package:notes/src/presentation/widget/row/dismissable_row_widget.dart';
 
 class HomePage extends StatelessWidget {
-  static const String route = '/';
+  static const String route = '/home';
   final HomePageController homePageController;
 
   const HomePage({
@@ -28,9 +29,10 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const String userId = 'fglGLyHQ2KqF4lZof2sJ';
+
     homePageController.readAllNote(
-      readAllNoteUseCaseParams: const ReadAllNoteUseCaseParams(
-        userId: userId,
+      readAllNoteUseCaseParams: ReadAllNoteUseCaseParams(
+        userId: UserId.userId,
       ),
     );
 
@@ -111,14 +113,14 @@ class HomePage extends StatelessWidget {
                           functionUpdate: () {
                             homePageController.updateIsComplete(
                               updateNoteUseCaseParams: UpdateNoteUseCaseParams(
-                                userId: userId,
+                                userId: UserId.userId,
                                 noteId: note.id!,
                                 isComplete: !note.isComplete,
                               ),
                             );
                             homePageController.readAllNote(
-                              readAllNoteUseCaseParams: const ReadAllNoteUseCaseParams(
-                                userId: userId,
+                              readAllNoteUseCaseParams: ReadAllNoteUseCaseParams(
+                                userId: UserId.userId,
                               ),
                             );
                           },
@@ -126,7 +128,7 @@ class HomePage extends StatelessWidget {
                           /// Функция удаления
                           functionDismissed: () {
                             homePageController.deleteNote(
-                              deleteNoteUseCaseParams: DeleteNoteUseCaseParams(userId: userId, noteId: note.id!),
+                              deleteNoteUseCaseParams: DeleteNoteUseCaseParams(userId: UserId.userId, noteId: note.id!),
                             );
                             homePageController.noteList.removeAt(index);
                             homePageController.notCompleteNoteList.removeAt(index);
