@@ -1,7 +1,10 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:notes/core/firebase/firebase_module.dart';
 import 'package:notes/core/services/services.dart';
+import 'package:notes/src/data/datasourse/user_datasourse.dart';
 import 'package:notes/src/domain/entities/entities.dart';
 import 'package:notes/src/domain/entities/enums/priority_type.dart';
 import 'package:notes/src/domain/entities/params_usecases/usecases.dart';
@@ -54,6 +57,20 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.backPrimaryColor,
       appBar: AppBar(
+        actions: [
+          //! Временно
+          IconButton(
+            icon: const Icon(
+              Icons.arrow_back_ios,
+              color: Colors.black,
+            ),
+            onPressed: () {
+              services<FirebaseModule>().auth.signOut();
+              services<UserDatasourse>().removeUserId();
+              log('userid = ${services<UserDatasourse>().getUserId()}');
+            },
+          ),
+        ],
         backgroundColor: AppColors.backPrimaryColor,
         elevation: 0.0,
       ),
