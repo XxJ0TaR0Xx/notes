@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:notes/core/firebase/firebase_module.dart';
 import 'package:notes/core/services/services.dart';
 import 'package:notes/src/presentation/const/app_colors.dart';
 import 'package:notes/src/presentation/controller/authorization_page_controller.dart';
@@ -18,6 +20,9 @@ class AuthorizationPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final TextEditingController emailTextCotntroller = TextEditingController();
+    final TextEditingController passwordTextCotntroller = TextEditingController();
+
     FutureOr<void> onPressedAddNote() async {
       Navigator.pushReplacement(
         context,
@@ -29,67 +34,91 @@ class AuthorizationPage extends StatelessWidget {
       );
     }
 
-    return Scaffold(
-      backgroundColor: AppColors.backPrimaryColor,
-      appBar: AppBar(
-        title: Text(
-          'Авторизация',
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-        elevation: 0.0,
-        backgroundColor: AppColors.backPrimaryColor,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const TextField(
-              decoration: InputDecoration(
-                hintText: 'Email',
+    return StreamBuilder(
+      stream: services<FirebaseModule>().auth.authStateChanges(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return HomePage(homePageController: services<HomePageController>());
+        } else {
+          return Scaffold(
+            backgroundColor: AppColors.backPrimaryColor,
+            appBar: AppBar(
+              title: Center(
+                child: Text(
+                  'Авторизация',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
               ),
+              elevation: 0.0,
+              backgroundColor: AppColors.backPrimaryColor,
             ),
-            const SizedBox(height: 16.0),
-            const TextField(
-              obscureText: true,
-              decoration: InputDecoration(
-                hintText: 'Пароль',
-              ),
-            ),
-            const SizedBox(height: 32.0),
-            ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.colorGreen,
-              ),
-              child: const Text('Войти'),
-            ),
-            const SizedBox(
-              height: 8.0,
-            ),
-            const Text('или'),
-            const SizedBox(
-              height: 8.0,
-            ),
-            AnimatedBuilder(
-              animation: authorizationPageControlle,
-              builder: (BuildContext context, Widget? child) {
-                return ElevatedButton(
-                  onPressed: () {
-                    authorizationPageControlle.signInAnonymously();
-
-                    onPressedAddNote();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.colorGray,
+            body: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TextField(
+                    controller: emailTextCotntroller,
+                    decoration: const InputDecoration(
+                      hintText: 'Email',
+                    ),
                   ),
-                  child: const Text('Войти как гость'),
-                );
-              },
+                  const SizedBox(height: 16.0),
+                  TextField(
+                    controller: passwordTextCotntroller,
+                    obscureText: true,
+                    decoration: const InputDecoration(
+                      hintText: 'Пароль',
+                    ),
+                  ),
+                  const SizedBox(height: 32.0),
+                  AnimatedBuilder(
+                    animation: authorizationPageControlle,
+                    builder: (context, child) {
+                      return ElevatedButton.icon(
+                        onPressed: () {
+                          authorizationPageControlle.singIn(
+                            email: emailTextCotntroller.text,
+                            password: passwordTextCotntroller.text,
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.colorGreen,
+                        ),
+                        icon: const Icon(Icons.lock_open),
+                        label: const Text('Войти'),
+                      );
+                    },
+                  ),
+                  const SizedBox(
+                    height: 8.0,
+                  ),
+                  const Text('или'),
+                  const SizedBox(
+                    height: 8.0,
+                  ),
+                  AnimatedBuilder(
+                    animation: authorizationPageControlle,
+                    builder: (BuildContext context, Widget? child) {
+                      return ElevatedButton(
+                        onPressed: () {
+                          authorizationPageControlle.signInAnonymously();
+
+                          onPressedAddNote();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.colorGray,
+                        ),
+                        child: const Text('Войти как гость'),
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
-          ],
-        ),
-      ),
+          );
+        }
+      },
     );
   }
 }
