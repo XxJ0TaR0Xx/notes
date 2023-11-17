@@ -35,6 +35,7 @@ class AuthorizationPage extends StatelessWidget {
     }
 
     return StreamBuilder(
+      //! Временно
       stream: services<FirebaseModule>().auth.authStateChanges(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {

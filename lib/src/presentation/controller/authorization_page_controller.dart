@@ -22,6 +22,9 @@ class AuthorizationPageControlle with ChangeNotifier {
     userModelRepositoryImpl = UserModelRepositoryImpl(firebaseModule: firebaseModule);
   }
 
+  //! Временно все реализации с userDatasourse and firebaseModule. auth
+  //! в последствии перейдут в репозитории и тд. это временно
+
   Future<void> signInAnonymously() async {
     try {
       UserCredential userCredential = await firebaseModule.auth.signInAnonymously();
