@@ -45,4 +45,32 @@ class AuthorizationPageControlle with ChangeNotifier {
 
     notifyListeners();
   }
+
+  Future<void> singIn({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      UserCredential userCredential = await firebaseModule.auth.signInWithEmailAndPassword(
+        email: email.trim(),
+        password: password.trim(),
+      );
+
+      if (userCredential.user != null) {
+        log('i am here: ${userCredential.user!.uid}');
+        userDatasourse.saveUserId(userCredential.user!.uid);
+        String? updateUserId = await userDatasourse.getUserId();
+        userModelRepositoryImpl.createUser(
+          CreateUserUseCaseParams(
+            userId: updateUserId!,
+            userName: email.trim(),
+          ),
+        );
+      }
+
+      log('Авторизация успешна: ${userCredential.user!.uid}');
+    } catch (e) {
+      log('Ошибка при авторизации SingIn: $e');
+    }
+  }
 }
