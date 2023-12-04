@@ -69,9 +69,6 @@ class AuthorizationPageControlle with ChangeNotifier {
           ),
         );
 
-        print('singIn here user:${user.id}');
-        print('singIn here user:${user.name} EBANST RRRRRRRRRRRRRRRRRRRRRRROOOOOOOOOOOOY');
-
         return user;
       },
     );
