@@ -1,79 +1,81 @@
-import 'dart:developer';
-
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
+import 'package:dartz/dartz.dart';
+import 'package:flutter/widgets.dart';
 import 'package:injectable/injectable.dart';
-
-import 'package:notes/core/firebase/firebase_module.dart';
-import 'package:notes/src/data/datasourse/user_datasourse.dart';
-import 'package:notes/src/data/repositories/user_model_repository_impl.dart';
+import 'package:notes/core/failure/failure.dart';
+import 'package:notes/src/domain/entities/entities.dart';
 import 'package:notes/src/domain/entities/params_usecases/usecases.dart';
+import 'package:notes/src/domain/entities/usecases/auth/sing_in_usecase_params.dart';
+import 'package:notes/src/domain/usecase/auth_usecase/sing_in_anonymously_usecase.dart';
+import 'package:notes/src/domain/usecase/auth_usecase/sing_in_usecase.dart';
+import 'package:notes/src/domain/usecase/user_usecases.dart';
+import 'package:notes/src/presentation/page/forbidden_page.dart';
 
 @Singleton()
 class AuthorizationPageControlle with ChangeNotifier {
-  final FirebaseModule firebaseModule;
-  final UserDatasourse userDatasourse;
-  late final UserModelRepositoryImpl userModelRepositoryImpl;
+  final SingInUseCase singInUseCase;
+  final SingInAnonymouslyUseCase singInAnonymouslyUseCase;
+  final CreateUserUseCase createUserUseCase;
 
   AuthorizationPageControlle({
-    required this.firebaseModule,
-    required this.userDatasourse,
-  }) {
-    userModelRepositoryImpl = UserModelRepositoryImpl(firebaseModule: firebaseModule);
-  }
+    required this.singInUseCase,
+    required this.singInAnonymouslyUseCase,
+    required this.createUserUseCase,
+  });
 
-  //! Временно все реализации с userDatasourse and firebaseModule. auth
-  //! в последствии перейдут в репозитории и тд. это временно
+  final TextEditingController emailTextController = TextEditingController();
+  final TextEditingController passwordTextController = TextEditingController();
 
   Future<void> signInAnonymously() async {
-    try {
-      UserCredential userCredential = await firebaseModule.auth.signInAnonymously();
-      String? userId = await userDatasourse.getUserId();
+    final Either<Failure, User> serverOrResult = await singInAnonymouslyUseCase.call(unit);
 
-      if (userCredential.user != null && userId == null) {
-        userDatasourse.saveUserId(userCredential.user!.uid);
-        String? updateUserId = await userDatasourse.getUserId();
-        userModelRepositoryImpl.createUser(
+    serverOrResult.fold(
+      (failure) {
+        return const ForbiddenPage();
+      },
+      (user) async {
+        await createUserUseCase.call(
           CreateUserUseCaseParams(
-            userId: updateUserId!,
-            userName: 'unknow',
+            userId: user.id!,
+            userName: user.name,
+            avatarUrl: user.avatarUrl,
           ),
         );
-      }
 
-      log('Авторизация успешна: ${userCredential.user!.uid}');
-    } catch (e) {
-      log('Ошибка при авторизации: $e');
-    }
+        return user;
+      },
+    );
 
     notifyListeners();
   }
 
-  Future<void> singIn({
-    required String email,
-    required String password,
-  }) async {
-    try {
-      UserCredential userCredential = await firebaseModule.auth.signInWithEmailAndPassword(
-        email: email.trim(),
-        password: password.trim(),
-      );
+  Future<void> singIn() async {
+    final Either<Failure, User> serverOrResult = await singInUseCase.call(
+      SingInUseCaseParams(
+        email: emailTextController.text,
+        password: passwordTextController.text,
+      ),
+    );
 
-      if (userCredential.user != null) {
-        log('i am here: ${userCredential.user!.uid}');
-        userDatasourse.saveUserId(userCredential.user!.uid);
-        String? updateUserId = await userDatasourse.getUserId();
-        userModelRepositoryImpl.createUser(
+    serverOrResult.fold(
+      (failure) {
+        return const ForbiddenPage();
+      },
+      (user) async {
+        await createUserUseCase.call(
           CreateUserUseCaseParams(
-            userId: updateUserId!,
-            userName: email.trim(),
+            userId: user.id!,
+            userName: user.name,
+            avatarUrl: user.avatarUrl,
           ),
         );
-      }
 
-      log('Авторизация успешна: ${userCredential.user!.uid}');
-    } catch (e) {
-      log('Ошибка при авторизации SingIn: $e');
-    }
+        print('singIn here user:${user.id}');
+        print('singIn here user:${user.name} EBANST RRRRRRRRRRRRRRRRRRRRRRROOOOOOOOOOOOY');
+
+        return user;
+      },
+    );
+
+    notifyListeners();
   }
 }
