@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:notes/core/firebase/firebase_module.dart';
 import 'package:notes/core/services/services.dart';
@@ -20,9 +19,6 @@ class AuthorizationPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TextEditingController emailTextCotntroller = TextEditingController();
-    final TextEditingController passwordTextCotntroller = TextEditingController();
-
     FutureOr<void> onPressedAddNote() async {
       Navigator.pushReplacement(
         context,
@@ -39,7 +35,10 @@ class AuthorizationPage extends StatelessWidget {
       stream: services<FirebaseModule>().auth.authStateChanges(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          return HomePage(homePageController: services<HomePageController>());
+          return HomePage(
+            homePageController: services<HomePageController>(),
+            //avatarUrl: authorizationPageControlle.avatarUrl,
+          );
         } else {
           return Scaffold(
             backgroundColor: AppColors.backPrimaryColor,
@@ -58,19 +57,29 @@ class AuthorizationPage extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  TextField(
-                    controller: emailTextCotntroller,
-                    decoration: const InputDecoration(
-                      hintText: 'Email',
-                    ),
+                  AnimatedBuilder(
+                    animation: authorizationPageControlle,
+                    builder: (context, child) {
+                      return TextField(
+                        controller: authorizationPageControlle.emailTextController,
+                        decoration: const InputDecoration(
+                          hintText: 'Email',
+                        ),
+                      );
+                    },
                   ),
                   const SizedBox(height: 16.0),
-                  TextField(
-                    controller: passwordTextCotntroller,
-                    obscureText: true,
-                    decoration: const InputDecoration(
-                      hintText: 'Пароль',
-                    ),
+                  AnimatedBuilder(
+                    animation: authorizationPageControlle,
+                    builder: (BuildContext context, Widget? child) {
+                      return TextField(
+                        controller: authorizationPageControlle.passwordTextController,
+                        obscureText: true,
+                        decoration: const InputDecoration(
+                          hintText: 'Пароль',
+                        ),
+                      );
+                    },
                   ),
                   const SizedBox(height: 32.0),
                   AnimatedBuilder(
@@ -78,10 +87,7 @@ class AuthorizationPage extends StatelessWidget {
                     builder: (context, child) {
                       return ElevatedButton.icon(
                         onPressed: () {
-                          authorizationPageControlle.singIn(
-                            email: emailTextCotntroller.text,
-                            password: passwordTextCotntroller.text,
-                          );
+                          authorizationPageControlle.singIn();
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.colorGreen,
