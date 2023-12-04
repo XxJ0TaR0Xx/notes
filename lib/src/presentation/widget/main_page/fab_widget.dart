@@ -13,6 +13,7 @@ class FabWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return FloatingActionButton(
       onPressed: onPressed,
+      backgroundColor: Colors.blueAccent,
       child: ColorFiltered(
         colorFilter: ColorFilter.mode(
           AppColors.colorWhite,
