@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:notes/core/services/services.dart';
 import 'package:notes/src/domain/entities/enums/priority_type.dart';
-import 'package:notes/src/domain/entities/params_usecases/usecases.dart';
 import 'package:notes/src/domain/utils/priority_type_parser.dart';
 import 'package:notes/src/presentation/const/app_colors.dart';
 import 'package:notes/src/presentation/controller/home_page_controller.dart';
@@ -29,8 +28,6 @@ class NotePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    notePageController.getUserId();
-
     notePageController.showUpdateFields(
       updatePriorityType: updatePriorityType,
       updateData: updateData,
@@ -60,23 +57,10 @@ class NotePage extends StatelessWidget {
                     if (!notePageController.isUpdate) {
                       notePageController.createNote(
                         context: context,
-                        createNoteUseCaseParams: CreateNoteUseCaseParams(
-                          userId: notePageController.userId,
-                          data: notePageController.textDataController.text,
-                          dateBeforComplete: notePageController.dateBeforComplete,
-                          isComplete: false,
-                          priorityType: notePageController.priorityType,
-                        ),
                       );
                     } else {
                       notePageController.updateNote(
-                        updateNoteUseCaseParams: UpdateNoteUseCaseParams(
-                          userId: notePageController.userId,
-                          noteId: updateNoteId!,
-                          data: notePageController.textDataController.text,
-                          dateBeforComplete: notePageController.dateBeforComplete,
-                          priorityType: notePageController.priorityType,
-                        ),
+                        noteId: updateNoteId!,
                       );
 
                       Navigator.pushReplacement(
@@ -92,9 +76,10 @@ class NotePage extends StatelessWidget {
                   child: const Text(
                     'СОХРАНИТЬ',
                     style: TextStyle(
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w600,
                       fontSize: 14.0,
                       letterSpacing: 0.16,
+                      color: Colors.blueAccent,
                     ),
                   ),
                 );
@@ -227,6 +212,9 @@ class NotePage extends StatelessWidget {
                               },
                               child: Text(
                                 notePageController.dateBeforCompleteStr,
+                                style: const TextStyle(
+                                  color: Colors.blueAccent,
+                                ),
                               ),
                             ),
                           );
@@ -241,6 +229,10 @@ class NotePage extends StatelessWidget {
                     animation: notePageController,
                     builder: (context, child) {
                       return Switch(
+                        activeTrackColor: AppColors.backPrimaryColor,
+                        activeColor: Colors.blueAccent,
+                        inactiveThumbColor: Colors.blueAccent,
+                        inactiveTrackColor: AppColors.backPrimaryColor,
                         value: notePageController.switchTurn,
                         onChanged: (value) => notePageController.turnSwitch(),
                       );
