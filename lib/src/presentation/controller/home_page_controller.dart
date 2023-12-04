@@ -1,37 +1,45 @@
 import 'package:dartz/dartz.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 import 'package:notes/core/failure/failure.dart';
 import 'package:notes/core/firebase/firebase_module.dart';
 import 'package:notes/core/services/services.dart';
-import 'package:notes/src/data/datasourse/user_datasourse.dart';
-import 'package:notes/src/data/repositories/note_model_repository_impl.dart';
 import 'package:notes/src/domain/entities/entities.dart';
 import 'package:notes/src/domain/entities/enums/priority_type.dart';
 import 'package:notes/src/domain/entities/params_usecases/usecases.dart';
-import 'package:notes/src/domain/repositories/note_repository.dart';
+import 'package:notes/src/domain/usecase/auth_usecase/sing_out_usecase.dart';
 import 'package:notes/src/domain/usecase/note_usecases.dart';
+import 'package:notes/src/domain/usecase/user_usecases.dart';
 import 'package:notes/src/domain/utils/date_parser.dart';
 import 'package:notes/src/presentation/page/forbidden_page.dart';
 
 @Singleton()
 class HomePageController with ChangeNotifier {
-  late final NoteRepository noteRepository;
-  late final DeleteNoteUseCase deleteNoteUseCase;
-  late final ReadAllNoteUseCase readAllNoteUseCase;
-  late final UpdateNoteUseCase updateNoteUseCase;
-  late final ReadNoteUseCase readNoteUseCase;
-  late final UserDatasourse userDatasourse;
+  final DeleteNoteUseCase deleteNoteUseCase;
+  final ReadAllNoteUseCase readAllNoteUseCase;
+  final UpdateNoteUseCase updateNoteUseCase;
+  final ReadNoteUseCase readNoteUseCase;
+  final SingOutUseCase singOutUseCase;
+  final GetUserByIdUseCase getUserByIdUseCase;
 
-  HomePageController({required this.userDatasourse}) {
-    noteRepository = NoteModelRepositoryImpl(firebaseModule: services<FirebaseModule>());
-    deleteNoteUseCase = DeleteNoteUseCase(noteRepository: noteRepository);
-    readAllNoteUseCase = ReadAllNoteUseCase(noteRepository: noteRepository);
-    updateNoteUseCase = UpdateNoteUseCase(noteRepository: noteRepository);
-    readNoteUseCase = ReadNoteUseCase(noteRepository: noteRepository);
-  }
+  HomePageController({
+    required this.deleteNoteUseCase,
+    required this.readAllNoteUseCase,
+    required this.updateNoteUseCase,
+    required this.readNoteUseCase,
+    required this.singOutUseCase,
+    required this.getUserByIdUseCase,
+  });
 
   Note noteLoading = const Note(data: "Loading", isComplete: false, priorityType: PriorityType.not);
+
+  User? _user;
+  User get user =>
+      _user ??
+      const User(
+        name: 'Loading',
+        avatarUrl: 'https://yandex.ru/images/search?text=unknown+user++image&img_url=https%3A%2F%2Fgotrening.com%2Fwp-content%2Fuploads%2F2021%2F04%2Fuser.png&pos=3&rpt=simage&stype=image&lr=118653&parent-reqid=1701624640179637-11832949636910780843-balancer-l7leveler-kubr-yp-vla-153-BAL-4370&source=serp',
+      );
 
   List<Note>? _noteList;
   List<Note> get noteList => _noteList ?? [noteLoading];
@@ -48,9 +56,6 @@ class HomePageController with ChangeNotifier {
   int _doneNote = 0;
   int get doneNote => _doneNote;
 
-  String? _userId;
-  String get userId => _userId ?? '';
-
   countDone(List<Note> allNotes) {
     int i = 0;
     List<Note> buffNotCompleteNoteList = [];
@@ -66,18 +71,36 @@ class HomePageController with ChangeNotifier {
     _doneNote = i;
   }
 
-  Future<void> getUserId() async {
-    _userId = await userDatasourse.getUserId();
+  Future<void> getUserById() async {
+    final Either<Failure, User> serverOrResult = await getUserByIdUseCase.call(
+      GetByIdUseCaseParams(
+        userId: services<FirebaseModule>().auth.currentUser!.uid,
+      ),
+    );
 
-    notifyListeners();
+    serverOrResult.fold(
+      (failure) {
+        navigateToErrorPage();
+      },
+      (user) {
+        print('User ${user.id} and ${user.avatarUrl}');
+        _user = user;
+      },
+    );
   }
 
-  Future<void> readAllNote({required ReadAllNoteUseCaseParams readAllNoteUseCaseParams}) async {
-    final Either<Failure, List<Note>> serverResultOrError = await readAllNoteUseCase.call(readAllNoteUseCaseParams);
+  Future<void> readAllNote() async {
+    print('Read all Notes user id:${services<FirebaseModule>().auth.currentUser!.uid}');
+
+    final Either<Failure, List<Note>> serverResultOrError = await readAllNoteUseCase.call(
+      ReadAllNoteUseCaseParams(
+        userId: services<FirebaseModule>().auth.currentUser!.uid,
+      ),
+    );
 
     serverResultOrError.fold(
       (failure) {
-        return const ForbiddenPage();
+        navigateToErrorPage();
       },
       (allNotes) {
         countDone(allNotes);
@@ -88,12 +111,28 @@ class HomePageController with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> deleteNote({required DeleteNoteUseCaseParams deleteNoteUseCaseParams}) async {
-    final Either<Failure, Unit> serverOrResult = await deleteNoteUseCase.call(deleteNoteUseCaseParams);
+  Future<void> singOut() async {
+    final Either<Failure, Unit> serverOrResult = await singOutUseCase.call(unit);
 
     serverOrResult.fold(
       (failure) {
-        return const ForbiddenPage();
+        navigateToErrorPage();
+      },
+      (unit) {},
+    );
+  }
+
+  Future<void> deleteNote({required String noteId}) async {
+    final Either<Failure, Unit> serverOrResult = await deleteNoteUseCase.call(
+      DeleteNoteUseCaseParams(
+        userId: services<FirebaseModule>().auth.currentUser!.uid,
+        noteId: noteId,
+      ),
+    );
+
+    serverOrResult.fold(
+      (failure) {
+        navigateToErrorPage();
       },
       (deleteNote) {},
     );
@@ -101,12 +140,21 @@ class HomePageController with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> updateIsComplete({required UpdateNoteUseCaseParams updateNoteUseCaseParams}) async {
-    final Either<Failure, Unit> serverOrResult = await updateNoteUseCase.call(updateNoteUseCaseParams);
+  Future<void> updateIsComplete({
+    required String noteId,
+    required bool isComplete,
+  }) async {
+    final Either<Failure, Unit> serverOrResult = await updateNoteUseCase.call(
+      UpdateNoteUseCaseParams(
+        userId: services<FirebaseModule>().auth.currentUser!.uid,
+        noteId: noteId,
+        isComplete: isComplete,
+      ),
+    );
 
     serverOrResult.fold(
       (failure) {
-        return const ForbiddenPage();
+        navigateToErrorPage();
       },
       (update) {},
     );
@@ -114,12 +162,17 @@ class HomePageController with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> readNote({required ReadNoteUseCaseParams readNoteUseCaseParams}) async {
-    final Either<Failure, Note> serverOrResult = await readNoteUseCase.call(readNoteUseCaseParams);
+  Future<void> readNote({required String noteId}) async {
+    final Either<Failure, Note> serverOrResult = await readNoteUseCase.call(
+      ReadNoteUseCaseParams(
+        userId: services<FirebaseModule>().auth.currentUser!.uid,
+        noteId: noteId,
+      ),
+    );
 
     serverOrResult.fold(
       (failure) {
-        return const ForbiddenPage();
+        navigateToErrorPage();
       },
       (note) {
         return _note = note;
@@ -151,4 +204,14 @@ class HomePageController with ChangeNotifier {
   String parsDate(DateTime? dateTime) {
     return formatDate(dateTime);
   }
+}
+
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+void navigateToErrorPage() {
+  navigatorKey.currentState?.pushReplacement(
+    MaterialPageRoute(
+      builder: (context) => const ForbiddenPage(),
+    ),
+  );
 }
