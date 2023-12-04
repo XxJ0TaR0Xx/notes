@@ -1,11 +1,11 @@
+import 'dart:developer';
+
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 import 'package:notes/core/failure/failure.dart';
 import 'package:notes/core/firebase/firebase_module.dart';
 import 'package:notes/core/services/services.dart';
-import 'package:notes/src/data/datasourse/user_datasourse.dart';
-import 'package:notes/src/data/repositories/note_model_repository_impl.dart';
 import 'package:notes/src/domain/entities/enums/priority_type.dart';
 import 'package:notes/src/domain/entities/params_usecases/usecases.dart';
 import 'package:notes/src/domain/repositories/note_repository.dart';
@@ -18,16 +18,15 @@ import 'package:table_calendar/table_calendar.dart';
 
 @Singleton()
 class NotePageController with ChangeNotifier {
-  late final NoteRepository noteRepository;
-  late final CreateNoteUseCase createNoteUseCase;
-  late final UpdateNoteUseCase updateNoteUseCase;
-  late final UserDatasourse userDatasourse;
+  final NoteRepository noteRepository;
+  final CreateNoteUseCase createNoteUseCase;
+  final UpdateNoteUseCase updateNoteUseCase;
 
-  NotePageController({required this.userDatasourse}) {
-    noteRepository = NoteModelRepositoryImpl(firebaseModule: services<FirebaseModule>());
-    createNoteUseCase = CreateNoteUseCase(noteRepository: noteRepository);
-    updateNoteUseCase = UpdateNoteUseCase(noteRepository: noteRepository);
-  }
+  NotePageController({
+    required this.noteRepository,
+    required this.createNoteUseCase,
+    required this.updateNoteUseCase,
+  });
 
   final TextEditingController textDataController = TextEditingController();
 
@@ -40,14 +39,11 @@ class NotePageController with ChangeNotifier {
   DateTime? _dateBeforComplete;
   DateTime? get dateBeforComplete => _dateBeforComplete;
 
-  PriorityType? _priorityType = PriorityType.not;
-  PriorityType get priorityType => _priorityType ?? PriorityType.not;
+  PriorityType _priorityType = PriorityType.not;
+  PriorityType get priorityType => _priorityType;
 
   String? _priorityTypeText;
   String get priorityTypeText => _priorityTypeText ?? 'Нет';
-
-  String? _userId;
-  String get userId => _userId ?? '';
 
   bool isUpdate = false;
 
@@ -75,13 +71,11 @@ class NotePageController with ChangeNotifier {
   }
 
   /// Функция для создания заметки и обработки исключений
-  createNote({required context, required CreateNoteUseCaseParams createNoteUseCaseParams}) async {
-    if (createNoteUseCaseParams.data != '' && checkDateBeforeComplete()) {
-      createNoteController(
-        createNoteUseCaseParams: createNoteUseCaseParams,
-      );
+  createNote({required context}) async {
+    if (textDataController.text != '' && checkDateBeforeComplete()) {
+      createNoteController();
       Navigator.of(context).pop();
-    } else if (createNoteUseCaseParams.data == '') {
+    } else if (textDataController.text == '') {
       snackBar(
         context: context,
         description: 'Введите текст для заметки',
@@ -172,12 +166,15 @@ class NotePageController with ChangeNotifier {
     }
   }
 
-  Future<void> getUserId() async {
-    _userId = await userDatasourse.getUserId();
-  }
-
-  Future<void> createNoteController({required CreateNoteUseCaseParams createNoteUseCaseParams}) async {
-    final Either<Failure, Unit> serverOrResult = await createNoteUseCase.call(createNoteUseCaseParams);
+  Future<void> createNoteController() async {
+    final Either<Failure, Unit> serverOrResult = await createNoteUseCase.call(
+      CreateNoteUseCaseParams(
+        userId: services<FirebaseModule>().auth.currentUser!.uid,
+        data: textDataController.text,
+        dateBeforComplete: _dateBeforComplete,
+        priorityType: _priorityType,
+      ),
+    );
 
     serverOrResult.fold(
       (failure) {
@@ -194,14 +191,14 @@ class NotePageController with ChangeNotifier {
     String? updateData,
     DateTime? updateDateBeforComplete,
   }) {
-    if (updateData != null || updatePriorityType != null || updateDateBeforComplete != null) {
+    if (textDataController.text != '' || _dateBeforComplete != null) {
       isUpdate = true;
     } else {
       isUpdate = false;
     }
 
     _priorityType = updatePriorityType ?? PriorityType.not;
-    _priorityTypeText = PriorityTypeParser.priorityToStrRu(_priorityType!);
+    _priorityTypeText = PriorityTypeParser.priorityToStrRu(_priorityType);
 
     textDataController.text = updateData ?? '';
 
@@ -217,14 +214,14 @@ class NotePageController with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> updateNote({required UpdateNoteUseCaseParams updateNoteUseCaseParams}) async {
+  Future<void> updateNote({required String noteId}) async {
     final Either<Failure, Unit> serverOrResult = await updateNoteUseCase.call(
       UpdateNoteUseCaseParams(
-        userId: updateNoteUseCaseParams.userId,
-        noteId: updateNoteUseCaseParams.noteId,
-        data: updateNoteUseCaseParams.data,
-        dateBeforComplete: updateNoteUseCaseParams.dateBeforComplete,
-        priorityType: updateNoteUseCaseParams.priorityType,
+        userId: services<FirebaseModule>().auth.currentUser!.uid,
+        noteId: noteId,
+        data: textDataController.text,
+        dateBeforComplete: _dateBeforComplete,
+        priorityType: _priorityType,
       ),
     );
 
